@@ -11,6 +11,7 @@
         android:theme="@style/AppTheme">
         <activity android:name=".HomeActivity"></activity>
         <activity android:name=".GroupActivity"></activity>
+        <activity android:name=".CreateWagerActivity"></activity>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
