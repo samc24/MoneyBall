@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class MainActivity extends AppCompatActivity {
+public class WrapperActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
 
@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_wrapper);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         registerBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, RegistrationActivity.class);
+                Intent intent = new Intent(WrapperActivity.this, RegistrationActivity.class);
                 startActivity(intent);
             }
         });
@@ -38,10 +38,10 @@ public class MainActivity extends AppCompatActivity {
                 FirebaseUser currUser = mAuth.getCurrentUser();
 
                 if(currUser == null) {//if user not logged in bring to the login page, if already logged in then bring the users to the dashboard
-                    startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                    startActivity(new Intent(WrapperActivity.this, LoginActivity.class));
                 }
                 else {
-                    startActivity(new Intent(MainActivity.this, DashboardActivity.class));
+                    startActivity(new Intent(WrapperActivity.this, DashboardActivity.class));
                 }
             }
         });
