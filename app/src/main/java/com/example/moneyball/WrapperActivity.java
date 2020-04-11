@@ -36,13 +36,13 @@ public class WrapperActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 FirebaseUser currUser = mAuth.getCurrentUser();
-
-                if(currUser == null) {//if user not logged in bring to the login page, if already logged in then bring the users to the dashboard
-                    startActivity(new Intent(WrapperActivity.this, LoginActivity.class));
-                }
-                else {
-                    startActivity(new Intent(WrapperActivity.this, DashboardActivity.class));
-                }
+                startActivity(new Intent(WrapperActivity.this, LoginActivity.class));
+//                if(currUser == null) {//if user not logged in bring to the login page, if already logged in then bring the users to the dashboard
+//                    startActivity(new Intent(WrapperActivity.this, LoginActivity.class));
+//                }
+//                else {
+//                    startActivity(new Intent(WrapperActivity.this, DashboardActivity.class));
+//                }
             }
         });
     }
