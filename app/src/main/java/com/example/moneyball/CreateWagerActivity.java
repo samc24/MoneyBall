@@ -15,6 +15,9 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
@@ -23,6 +26,7 @@ public class CreateWagerActivity extends AppCompatActivity {
     ImageButton upload;
     Drawable bg;
     Uri selectedImageUri;
+    final FirebaseDatabase database = FirebaseDatabase.getInstance();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,6 +65,15 @@ public class CreateWagerActivity extends AppCompatActivity {
                 String headingText = heading.getText().toString();
                 String descriptionText = description.getText().toString();
                 String groupNameText = groupName.getText().toString();
+
+                //DatabaseReference ref = database.getReference();
+                //DatabaseReference wagerRef = ref.child("wagers").push();
+                /*
+                groupRef.child("picture").setValue(selectedImageUri.toString());
+                groupRef.child("heading").setValue(headingText);
+                groupRef.child("description").setValue(descriptionText);
+                groupRef.child("groupName").setValue(groupNameText);
+                */
                 intent.putExtra("pic", selectedImageUri.toString());
                 intent.putExtra("headingText", headingText);
                 intent.putExtra("descriptionText", descriptionText);

@@ -2,7 +2,9 @@ package com.example.moneyball;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,16 +18,20 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class LoginActivity extends AppCompatActivity {
-
+    private static final int FROM_LOGIN = 2;
     private EditText emailTV, passwordTV;
     private Button loginBtn;
     private ProgressBar progressBar;
 
     private FirebaseAuth mAuth;
-
-
+    final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    Bundle b = new Bundle();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +58,7 @@ public class LoginActivity extends AppCompatActivity {
     private void loginUserAccount() {
         progressBar.setVisibility(View.VISIBLE);
 
-        String email, password;
+        final String email, password;
         email = emailTV.getText().toString();
         password = passwordTV.getText().toString();
 
@@ -74,6 +80,7 @@ public class LoginActivity extends AppCompatActivity {
                             progressBar.setVisibility(View.GONE);
 
                             Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+
                             startActivity(intent);
                         }
                         else {
