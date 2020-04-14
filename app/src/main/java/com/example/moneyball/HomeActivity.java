@@ -124,6 +124,9 @@ public class HomeActivity extends AppCompatActivity implements WagerAdapter.Item
                 //wagerAdapter.notifyDataSetChanged();
 
             }
+            else if (resultCode == RESULT_CANCELED){
+                Toast.makeText(getApplicationContext(),  "New Wager Canceled", Toast.LENGTH_SHORT).show();
+            }
         }
         if (requestCode == FROM_LOGIN){
             String UID = data.getStringExtra("UID");

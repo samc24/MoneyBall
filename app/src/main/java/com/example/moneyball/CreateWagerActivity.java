@@ -14,6 +14,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -27,6 +28,7 @@ public class CreateWagerActivity extends AppCompatActivity {
     Drawable bg;
     Uri selectedImageUri;
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    String uriStr;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,20 +76,32 @@ public class CreateWagerActivity extends AppCompatActivity {
                 groupRef.child("description").setValue(descriptionText);
                 groupRef.child("groupName").setValue(groupNameText);
                 */
-                intent.putExtra("pic", selectedImageUri.toString());
-                intent.putExtra("headingText", headingText);
-                intent.putExtra("descriptionText", descriptionText);
-                intent.putExtra("groupNameText", groupNameText);
-                setResult(RESULT_OK, intent);
-                finish();
 
+                if(headingText.equals("")|| descriptionText.equals("")|| groupNameText.equals("")){
+                    Toast.makeText(getApplicationContext(),  "Please enter wager information for all text fields", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    if(selectedImageUri==null){
+                        uriStr = ""; //Toast.makeText(getApplicationContext(),  "add pic", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        uriStr = selectedImageUri.toString();
+                    }
+                    intent.putExtra("pic", uriStr);
+                    intent.putExtra("headingText", headingText);
+                    intent.putExtra("descriptionText", descriptionText);
+                    intent.putExtra("groupNameText", groupNameText);
+                    setResult(RESULT_OK, intent);
+                    finish();
+                }
             }
         });
         // TODO
         exit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                setResult(RESULT_CANCELED, intent);
+                finish();
             }
         });
     }
