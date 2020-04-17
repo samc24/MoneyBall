@@ -62,6 +62,7 @@ public class HomeActivity extends AppCompatActivity implements WagerAdapter.Item
                     //Long picture = (Long)wagerData.get("picture");
                     Wager newWager = new Wager(id, heading, groupName, R.drawable.kobe_jersey, description);
                     wagers.add(newWager);
+                    wagerAdapter.notifyDataSetChanged(); // new addition
                 }
             }
 
@@ -101,8 +102,19 @@ public class HomeActivity extends AppCompatActivity implements WagerAdapter.Item
     @Override
     // https://stackoverflow.com/questions/40587168/simple-android-grid-example-using-recyclerview-with-gridlayoutmanager-like-the
     public void onItemClick(View view, int position) {
-        String msg = ((WagerAdapter) wagerAdapter).getItem(position).getDescription();
-        Toast.makeText(getApplicationContext(),  msg, Toast.LENGTH_SHORT).show();
+        String description = ((WagerAdapter) wagerAdapter).getItem(position).getDescription();
+        String heading = ((WagerAdapter) wagerAdapter).getItem(position).getHeading();
+        String group = ((WagerAdapter) wagerAdapter).getItem(position).getGroup();
+        int pic = ((WagerAdapter) wagerAdapter).getItem(position).getPicture();
+        long id = ((WagerAdapter) wagerAdapter).getItem(position).getId();
+//        Toast.makeText(getApplicationContext(),  description, Toast.LENGTH_SHORT).show();
+        Intent openWager = new Intent(getApplicationContext(), WagerActivity.class);
+        openWager.putExtra("description", description);
+        openWager.putExtra("heading", heading);
+        openWager.putExtra("group", group);
+        openWager.putExtra("id", id);
+        openWager.putExtra("pic", pic);
+        startActivity(openWager);
     }
 
     @Override
