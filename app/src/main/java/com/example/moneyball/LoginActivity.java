@@ -26,7 +26,7 @@ import com.google.firebase.database.FirebaseDatabase;
 public class LoginActivity extends AppCompatActivity {
     private static final int FROM_LOGIN = 2;
     private EditText emailTV, passwordTV;
-    private Button loginBtn;
+    private Button loginBtn, registerBtn;
     private ProgressBar progressBar;
 
     private FirebaseAuth mAuth;
@@ -45,6 +45,14 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 loginUserAccount();
+            }
+        });
+
+        registerBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(LoginActivity.this, RegistrationActivity.class);
+                startActivity(intent);
             }
         });
     }
@@ -99,5 +107,6 @@ public class LoginActivity extends AppCompatActivity {
 
         loginBtn = findViewById(R.id.login);
         progressBar = findViewById(R.id.progressBar);
+        registerBtn = findViewById(R.id.register);
     }
 }
