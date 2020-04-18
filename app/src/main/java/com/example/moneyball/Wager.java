@@ -2,10 +2,9 @@ package com.example.moneyball;
 
 
 public class Wager {
-    long id;
     int picture;
-    String heading, description, group;
-    public Wager(long id, String heading, String group, int picture, String description){
+    String id, heading, description, group;
+    public Wager(String id, String heading, String group, int picture, String description){
         this.id = id;
         this.heading = heading;
         this.group = group;
@@ -13,11 +12,11 @@ public class Wager {
         this.description = description;
     }
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

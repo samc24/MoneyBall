@@ -60,8 +60,9 @@ public class HomeActivity extends AppCompatActivity implements WagerAdapter.Item
                     String heading = wagerData.get("heading").toString();
                     String description = wagerData.get("description").toString();
                     //Long picture = (Long)wagerData.get("picture");
-                    Wager newWager = new Wager(id, heading, groupName, R.drawable.kobe_jersey, description);
+                    Wager newWager = new Wager(key, heading, groupName, R.drawable.kobe_jersey, description);
                     wagers.add(newWager);
+                    wagerAdapter.notifyDataSetChanged();
                 }
             }
 
@@ -107,8 +108,6 @@ public class HomeActivity extends AppCompatActivity implements WagerAdapter.Item
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d("tag", Integer.toString(requestCode));
-        Log.d("tag", Integer.toString(resultCode));
         if (requestCode == ADD_WAGER_REQUEST){
             if(resultCode == RESULT_OK){
                 Uri imageUri = Uri.parse(data.getStringExtra("pic"));
@@ -116,9 +115,11 @@ public class HomeActivity extends AppCompatActivity implements WagerAdapter.Item
                 String description = data.getStringExtra("descriptionText");
                 String group = data.getStringExtra("groupNameText");
 
-                Wager newWager = new Wager(id, heading, group, R.drawable.weather, description); // TODO: add functionality in Wager class for when a uri (imageUri) is passed to be used as prof pic instead of drawable
+
                 DatabaseReference ref = database.getReference();
                 DatabaseReference wagerRef = ref.child("wagers").push();
+                String key = wagerRef.getKey();
+                Wager newWager = new Wager(key, heading, group, R.drawable.weather, description); // TODO: add functionality in Wager class for when a uri (imageUri) is passed to be used as prof pic instead of drawable
                 wagerRef.setValue(newWager);
                 //wagers.add(newWager);
                 //wagerAdapter.notifyDataSetChanged();

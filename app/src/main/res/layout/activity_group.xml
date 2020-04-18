@@ -22,7 +22,7 @@
             android:layout_height="0dp"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
-            android:layout_weight="2"
+            android:layout_weight="1"
             android:background="#874CAF50">
 
             <TextView
@@ -30,24 +30,16 @@
                 android:layout_width="148dp"
                 android:layout_height="32dp"
                 android:layout_marginLeft="10dp"
-                android:layout_marginTop="188dp"
+                android:layout_marginTop="60dp"
                 android:text="Mamba Gang"
                 android:textSize="24sp" />
-
-            <ImageView
-                android:id="@+id/ivGroupPicture"
-                android:layout_width="100dp"
-                android:layout_height="136dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="50dp"
-                tools:src="@drawable/kobe_jersey" />
 
             <TextView
                 android:id="@+id/tvGroup_Description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
-                android:layout_marginTop="220dp"
+                android:layout_marginTop="100dp"
                 android:text="Anything and everything basketball; bets and challenges." />
 
             <Button
@@ -82,6 +74,24 @@
 
             </androidx.recyclerview.widget.RecyclerView>
         </RelativeLayout>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_margin="16dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.97"
+            android:src="@drawable/sharp_add_white_24"
+            app:fabSize="normal"
+            />
 
 
     </LinearLayout>
