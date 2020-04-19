@@ -17,6 +17,7 @@
         <activity android:name=".CreateWagerActivity"></activity>
         <activity android:name=".UserGroupsActivity"></activity>
         <activity android:name=".CreateGroupActivity"></activity>
+        <activity android:name=".WagerActivity"></activity>
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

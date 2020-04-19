@@ -110,8 +110,22 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
     @Override
     // https://stackoverflow.com/questions/40587168/simple-android-grid-example-using-recyclerview-with-gridlayoutmanager-like-the
     public void onItemClick(View view, int position) {
-        String msg = ((WagerAdapter) wagerAdapter).getItem(position).getDescription();
-        Toast.makeText(getApplicationContext(),  msg, Toast.LENGTH_SHORT).show();
+//        String msg = ((WagerAdapter) wagerAdapter).getItem(position).getDescription();
+//        Toast.makeText(getApplicationContext(),  msg, Toast.LENGTH_SHORT).show();
+        String description = ((WagerAdapter) wagerAdapter).getItem(position).getDescription();
+        String heading = ((WagerAdapter) wagerAdapter).getItem(position).getHeading();
+        String group = ((WagerAdapter) wagerAdapter).getItem(position).getGroup();
+        int pic = ((WagerAdapter) wagerAdapter).getItem(position).getPicture();
+        //long id = ((WagerAdapter) wagerAdapter).getItem(position).getId();
+//        Toast.makeText(getApplicationContext(),  description, Toast.LENGTH_SHORT).show();
+        Intent openWager = new Intent(getApplicationContext(), WagerActivity.class);
+        openWager.putExtra("description", description);
+        openWager.putExtra("heading", heading);
+        openWager.putExtra("group", group);
+        openWager.putExtra("id", 0L); // change 0L to id
+        openWager.putExtra("pic", pic);
+        startActivity(openWager);
+
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
