@@ -19,13 +19,13 @@ public class WagerAdapter extends RecyclerView.Adapter<WagerAdapter.MyViewHolder
     // you provide access to all the views for a data item in a view holder
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         // each data item is just a string in this case
-        public TextView header, group;
+        public TextView header, description;
         public ImageView picture;
         public MyViewHolder(View v) {
             super(v);
             header = v.findViewById(R.id.header);
             picture = v.findViewById(R.id.picture);
-            group = v.findViewById(R.id.group);
+            description = v.findViewById(R.id.description);
             v.setOnClickListener(this);
         }
         @Override
@@ -55,7 +55,7 @@ public class WagerAdapter extends RecyclerView.Adapter<WagerAdapter.MyViewHolder
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         holder.header.setText(mDataset.get(position).getHeading());
-        holder.group.setText(mDataset.get(position).getGroup());
+        holder.description.setText(mDataset.get(position).getDescription());
         holder.picture.setImageResource(mDataset.get(position).getPicture());
 
     }

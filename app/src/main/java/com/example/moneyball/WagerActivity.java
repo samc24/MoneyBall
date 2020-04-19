@@ -3,6 +3,7 @@ package com.example.moneyball;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -16,11 +17,14 @@ public class WagerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_wager);
         Bundle extras = getIntent().getExtras();
         String description = extras.getString("description");
+        String groupDesc = extras.getString("groupDescription");
         String heading = extras.getString("heading");
         String group = extras.getString("group");
         long id = extras.getLong("id");
         int pic = extras.getInt("pic");
         TextView groupName, groupDescription, wagerName, wagerDescription;
+        groupDescription = findViewById(R.id.groupDescription);
+        groupDescription.setText(groupDesc);
         groupName = findViewById(R.id.groupName);
         groupName.setText(group);
         wagerName = findViewById(R.id.wagerName);

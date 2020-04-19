@@ -34,42 +34,54 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
     TextView description;
     Button backButton;
     String groupId;
+    String groupHeading;
+    String groupDescription;
     public static final int ADD_WAGER_REQUEST = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group);
-        Intent intent = getIntent();
+
+
+        Intent intent = getIntent(); //get intent that was passed from the previous page
+        //get data passed from intent
         final String groupId = intent.getStringExtra("groupId");
-        String groupDescription = intent.getStringExtra("description");
-        String groupHeading = intent.getStringExtra("heading");
+        groupDescription = intent.getStringExtra("description");
+        groupHeading = intent.getStringExtra("heading");
+
+        //initialize views
         heading = findViewById(R.id.tvGroup_Title);
         description = findViewById(R.id.tvGroup_Description);
         backButton = findViewById(R.id.btnGroup_Back);
+        RecyclerView wagerList = findViewById(R.id.group_bets);
+
+        //set the heading and description text for the group
         heading.setText(groupHeading);
         description.setText(groupDescription);
-        RecyclerView wagerList = findViewById(R.id.group_bets);
         int numOfColumns = 2;
         RecyclerView.LayoutManager recyclerManager = new GridLayoutManager(getApplicationContext(), numOfColumns);
         wagerList.setLayoutManager(recyclerManager);
-        wagers = new ArrayList<>();
-        ref = ref.child("groups").child(groupId).child("wagers");
+
+        wagers = new ArrayList<>(); //this will be used to store the groups wagers
+        ref = ref.child("groups").child(groupId).child("wagers"); //get the reference to the wagers for this specific group in the database
         ref.addValueEventListener(new ValueEventListener() {
+            //read the wager data from the database
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                wagers.clear();
-                HashMap<String, Object> dataMap = (HashMap<String, Object>) dataSnapshot.getValue();
-                if(dataMap!=null) {
-                    Log.d("tag", dataMap.toString());
-                    for (String key : dataMap.keySet()) {
+                wagers.clear(); //clear the wagers arraylist so to avoid adding duplicates
+                HashMap<String, Object> dataMap = (HashMap<String, Object>) dataSnapshot.getValue(); //get the database data as a hashmap
+                if(dataMap!=null) { //check if its null to avoid errors
+                    for (String key : dataMap.keySet()) {   //loop through the wagers
                         Object data = dataMap.get(key);
                         HashMap<String, Object> wagerData = (HashMap<String, Object>) data;
+
+                        //separate the data by groupname, heading, and description
                         String groupName = wagerData.get("group").toString();
                         String heading = wagerData.get("heading").toString();
                         String description = wagerData.get("description").toString();
-                        //Long picture = (Long)wagerData.get("picture");
-                        Wager newWager = new Wager(key, heading, groupName, R.drawable.kobe_jersey, description);
-                        wagers.add(newWager);
+
+                        Wager newWager = new Wager(key, heading, groupName, R.drawable.kobe_jersey, description);  //create the new wager using the data from above
+                        wagers.add(newWager); //add this wager to a list of wagers
                         wagerAdapter.notifyDataSetChanged();
                     }
                 }
@@ -97,12 +109,12 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
             }
         });
 
+        //button to return to the users groups page
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent backToGroupsPage = new Intent(getApplicationContext(), UserGroupsActivity.class);
                 startActivity(backToGroupsPage);
-//                Snackbar.make(view, "Here's a Snackbar", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
             }
         });
 
@@ -110,18 +122,17 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
     @Override
     // https://stackoverflow.com/questions/40587168/simple-android-grid-example-using-recyclerview-with-gridlayoutmanager-like-the
     public void onItemClick(View view, int position) {
-//        String msg = ((WagerAdapter) wagerAdapter).getItem(position).getDescription();
-//        Toast.makeText(getApplicationContext(),  msg, Toast.LENGTH_SHORT).show();
+        //Get wager data to be passed to wager activity
         String description = ((WagerAdapter) wagerAdapter).getItem(position).getDescription();
         String heading = ((WagerAdapter) wagerAdapter).getItem(position).getHeading();
-        String group = ((WagerAdapter) wagerAdapter).getItem(position).getGroup();
         int pic = ((WagerAdapter) wagerAdapter).getItem(position).getPicture();
-        //long id = ((WagerAdapter) wagerAdapter).getItem(position).getId();
-//        Toast.makeText(getApplicationContext(),  description, Toast.LENGTH_SHORT).show();
-        Intent openWager = new Intent(getApplicationContext(), WagerActivity.class);
+
+        Intent openWager = new Intent(getApplicationContext(), WagerActivity.class); //create the intent
+        //pass data to intent
         openWager.putExtra("description", description);
         openWager.putExtra("heading", heading);
-        openWager.putExtra("group", group);
+        openWager.putExtra("group", groupHeading);
+        openWager.putExtra("groupDescription", groupDescription);
         openWager.putExtra("id", 0L); // change 0L to id
         openWager.putExtra("pic", pic);
         startActivity(openWager);
@@ -131,20 +142,18 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == ADD_WAGER_REQUEST){
             if(resultCode == RESULT_OK){
+                //Get data from create wager activity to be used in adding the wager data to the database
                 Uri imageUri = Uri.parse(data.getStringExtra("pic"));
                 String heading = data.getStringExtra("headingText");
                 String description = data.getStringExtra("descriptionText");
                 String group = data.getStringExtra("groupNameText");
 
 
-                DatabaseReference ref = database.getReference();
-                DatabaseReference wagerRef = ref.child("groups").child(group).child("wagers").push();
-                String key = wagerRef.getKey();
-                Wager newWager = new Wager(key, heading, group, R.drawable.weather, description); // TODO: add functionality in Wager class for when a uri (imageUri) is passed to be used as prof pic instead of drawable
-                wagerRef.setValue(newWager);
-                //wagers.add(newWager);
-                //wagerAdapter.notifyDataSetChanged();
-
+                DatabaseReference ref = database.getReference();    //Get database reference
+                DatabaseReference wagerRef = ref.child("groups").child(group).child("wagers").push(); //Find specific spot in database to place data (push creates unique key)
+                String key = wagerRef.getKey(); //get the key in order to store it in the wager class
+                Wager newWager = new Wager(key, heading, group, R.drawable.weather, description); //create wager
+                wagerRef.setValue(newWager); //set the value in the database to be that of the wager
             }
         }
     }

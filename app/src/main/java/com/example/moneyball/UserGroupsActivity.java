@@ -73,13 +73,10 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
                     for (String key : userGroupData.keySet()) {
                         Object data = userGroupData.get(key);
                         usersGroups.add(data.toString());
-                        Log.d("tag2", data.toString());
-                        Log.d("tag2", usersGroups.toString());
                     }
                 }
-                Log.d("tag3",dataMap.toString());
+
                 if(objData!=null) {
-                    Log.d("tag", objData.toString());
                     for (String key : objData.keySet()) {
                         Object data = objData.get(key);
                         if(usersGroups.contains(key)){
@@ -87,7 +84,6 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
                             String heading = groupData.get("heading").toString();
                             String description = groupData.get("description").toString();
                             String groupCreator = groupData.get("groupCreator").toString();
-                            //Long picture = (Long)wagerData.get("picture");
                             Group newGroup = new Group(key, heading, description, groupCreator);
                             groups.add(newGroup);
                             groupAdapter.notifyDataSetChanged();
@@ -104,29 +100,17 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
 
         });
 
-
-        /*
-        Wager flops =new Wager(id, "Harden Flops", "Mamba Gang", R.drawable.kobe_jersey, "Over/Under: \n" + "6 flops in tonight’s game vs the Thunder");
-        id++;
-        Wager sun = new Wager(id, "Sun Disappears", "Weather Watchers", R.drawable.weather, "Bruh the Sun just disappeared what happened");
-        id++;
-        wagers.add(flops);
-        wagers.add(sun);
-        wagers.add(flops);
-        wagers.add(flops);
-        wagers.add(flops);
-         */
         groupAdapter = new GroupAdapter(groups);
         groupList.setAdapter(groupAdapter);
         ((GroupAdapter) groupAdapter).setClickListener(this);
 
-        // Adding a group
+        //Click on the floating button to add or join a group
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //leads to create group activity
                 Intent addGroup = new Intent(getApplicationContext(), CreateGroupActivity.class);
-
                 startActivityForResult(addGroup, ADD_WAGER_REQUEST);
             }
         });
@@ -138,8 +122,9 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
     @Override
     // https://stackoverflow.com/questions/40587168/simple-android-grid-example-using-recyclerview-with-gridlayoutmanager-like-the
     public void onItemClick(View view, int position) {
-        String msg = ((GroupAdapter) groupAdapter).getItem(position).getDescription();
+        //View the group you click on
         Intent viewGroup = new Intent(getApplicationContext(), GroupActivity.class);
+        //put group data into intent to be passed to group activity
         viewGroup.putExtra("groupId",((GroupAdapter) groupAdapter).getItem(position).getId());
         viewGroup.putExtra("heading",((GroupAdapter) groupAdapter).getItem(position).getHeading());
         viewGroup.putExtra("description",((GroupAdapter) groupAdapter).getItem(position).getDescription());
@@ -150,53 +135,47 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == ADD_WAGER_REQUEST){
             if(resultCode == NEW_GROUP){
+                //This is called if a user creates a new group
+                //get data passed from create group activity
                 String heading = data.getStringExtra("headingText");
                 String description = data.getStringExtra("descriptionText");
                 String groupCreator = data.getStringExtra("groupCreator");
 
-                DatabaseReference ref = database.getReference();
-                DatabaseReference groupRef = ref.child("groups").push();
-                String key = groupRef.getKey();
+                DatabaseReference ref = database.getReference(); //get db reference
+                DatabaseReference groupRef = ref.child("groups").push(); //get the path to store the data
+                String key = groupRef.getKey(); //get the key for storing in a users database
 
+
+                //get current users ID
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 String UID = "";
                 if(user!=null){
                     UID = user.getUid();
                 }
 
-                DatabaseReference userGroupsRef = ref.child("users").child(UID).child("groups").push();
-                userGroupsRef.setValue(groupRef.getKey());
+                DatabaseReference userGroupsRef = ref.child("users").child(UID).child("groups").push(); //get path to store groupID under a users data
+                userGroupsRef.setValue(groupRef.getKey()); //store the group ID (so we know what groups a user is in)
 
-                Group newGroup = new Group(key, heading, description, groupCreator);
-                groupRef.setValue(newGroup);
-                //wagers.add(newWager);
-                //wagerAdapter.notifyDataSetChanged();
+                Group newGroup = new Group(key, heading, description, groupCreator); //create the group
+                groupRef.setValue(newGroup); //set the db value
 
             }
             if(resultCode == ADD_GROUP){
-                Log.d("joingroup", "MADE IT HERE");
-                String heading = data.getStringExtra("headingText");
-                String description = data.getStringExtra("descriptionText");
-                String groupCreator = data.getStringExtra("groupCreator");
-                String id = data.getStringExtra("id");
-                Log.d("joingroup", "ID IS" + id);
-                DatabaseReference ref = database.getReference();
-                //DatabaseReference groupRef = ref.child("groups").push();
-                //String key = groupRef.getKey();
+                //This is called if a user adds an existing group
+                //To add the groupID field to a users data in the database
+                String id = data.getStringExtra("id"); //get the group ID
+                DatabaseReference ref = database.getReference(); //get the db reference
 
+                //get the ID of the current user
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 String UID = "";
                 if(user!=null){
                     UID = user.getUid();
                 }
 
-                DatabaseReference userGroupsRef = ref.child("users").child(UID).child("groups").push();
-                userGroupsRef.setValue(id);
+                DatabaseReference userGroupsRef = ref.child("users").child(UID).child("groups").push(); //get the correct path to write the data
+                userGroupsRef.setValue(id); //write the data
 
-                //Group newGroup = new Group(key, heading, description, groupCreator);
-                //groupRef.setValue(newGroup);
-                //wagers.add(newWager);
-                //wagerAdapter.notifyDataSetChanged();
 
             }
 
