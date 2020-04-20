@@ -2,6 +2,7 @@ package com.example.moneyball;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -49,8 +50,9 @@ public class WagerActivity extends AppCompatActivity {
         challenge.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO: Abdul link ur challenge stuff here
-                Toast.makeText(getApplicationContext(),  "Opening Challenge Payment Stuff", Toast.LENGTH_LONG).show();
+                Intent myIntent = new Intent(WagerActivity.this,  DareActivity.class);
+                Toast.makeText(getApplicationContext(),"Spin for DARE", Toast.LENGTH_LONG).show();
+                startActivity(myIntent);
             }
         });
 
