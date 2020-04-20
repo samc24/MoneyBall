@@ -80,12 +80,12 @@ public class CreateWagerActivity extends AppCompatActivity {
                 groupRef.child("description").setValue(descriptionText);
                 groupRef.child("groupName").setValue(groupNameText);
                 */
-                intent.putExtra("pic", selectedImageUri.toString());
-                intent.putExtra("headingText", headingText);
-                intent.putExtra("descriptionText", descriptionText);
-                intent.putExtra("groupNameText", groupIdToPass);
-                setResult(RESULT_OK, intent);
-                finish();
+//                intent.putExtra("pic", selectedImageUri.toString());
+//                intent.putExtra("headingText", headingText);
+//                intent.putExtra("descriptionText", descriptionText);
+//                intent.putExtra("groupNameText", groupIdToPass);
+//                setResult(RESULT_OK, intent);
+//                finish();
 
                 if(headingText.equals("")|| descriptionText.equals("")|| groupNameText.equals("")){
                     Toast.makeText(getApplicationContext(),  "Please enter wager information for all text fields", Toast.LENGTH_SHORT).show();
@@ -97,6 +97,8 @@ public class CreateWagerActivity extends AppCompatActivity {
                     else {
                         uriStr = selectedImageUri.toString();
                     }
+                    Toast.makeText(getApplicationContext(),  "Done!", Toast.LENGTH_SHORT).show();
+
                     intent.putExtra("pic", uriStr);
                     intent.putExtra("headingText", headingText);
                     intent.putExtra("descriptionText", descriptionText);

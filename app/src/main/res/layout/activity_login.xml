@@ -26,6 +26,7 @@
         android:layout_marginStart="31dp"
         android:layout_marginTop="284dp"
         android:layout_marginBottom="241dp"
+        android:inputType="textEmailAddress"
         android:hint="Email" />
 
     <EditText
@@ -45,14 +46,12 @@
 
     <Button
         android:id="@+id/login"
-        android:layout_width="199dp"
-        android:layout_height="72dp"
+        android:layout_width="96dp"
+        android:layout_height="46dp"
         android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_marginStart="98dp"
-        android:layout_marginTop="414dp"
         android:layout_marginEnd="98dp"
         android:layout_marginBottom="101dp"
         android:backgroundTint="#2BC531"
@@ -61,16 +60,14 @@
 
     <Button
         android:id="@+id/register"
-        android:layout_width="204dp"
-        android:layout_height="79dp"
+        android:layout_width="96dp"
+        android:layout_height="46dp"
         android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_marginStart="96dp"
-        android:layout_marginTop="493dp"
         android:layout_marginEnd="95dp"
-        android:layout_marginBottom="15dp"
+        android:layout_marginBottom="40dp"
         android:backgroundTint="#2BC531"
         android:text="Register"
         android:textColor="#FFFFFF" />

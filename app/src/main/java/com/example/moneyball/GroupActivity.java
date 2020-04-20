@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,7 +33,7 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
     DatabaseReference ref = database.getReference();
     TextView heading;
     TextView description;
-    Button backButton;
+    ImageButton backButton;
     String groupId;
     String groupHeading;
     String groupDescription;
@@ -109,6 +110,7 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
             }
         });
 
+
         //button to return to the users groups page
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -154,6 +156,9 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
                 String key = wagerRef.getKey(); //get the key in order to store it in the wager class
                 Wager newWager = new Wager(key, heading, group, R.drawable.weather, description); //create wager
                 wagerRef.setValue(newWager); //set the value in the database to be that of the wager
+            }
+            else if (resultCode == RESULT_CANCELED){
+                Toast.makeText(getApplicationContext(),  "New Wager Canceled", Toast.LENGTH_SHORT).show();
             }
         }
     }
