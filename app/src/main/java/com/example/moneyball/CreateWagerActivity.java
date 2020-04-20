@@ -102,7 +102,7 @@ public class CreateWagerActivity extends AppCompatActivity {
                     intent.putExtra("pic", uriStr);
                     intent.putExtra("headingText", headingText);
                     intent.putExtra("descriptionText", descriptionText);
-                    intent.putExtra("groupNameText", groupNameText);
+                    intent.putExtra("groupIdToPass", groupIdToPass);
                     setResult(RESULT_OK, intent);
                     finish();
                 }
