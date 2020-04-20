@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/LinearLayout1"
+    android:orientation="vertical"
+    android:paddingBottom="@android:dimen/thumbnail_height"
+
+    tools:context=".PlaylistActivity">
+
+
+    <com.google.android.youtube.player.YouTubePlayerView
+        android:id="@+id/youtube_player"
+        android:layout_width="match_parent"
+        android:layout_centerInParent="true"
+        android:layout_height="wrap_content"
+        android:background="#fff"/>
+
+    <TextView
+        android:id="@+id/watchdares"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_above="@+id/youtube_player"
+        android:layout_centerInParent="true"
+        android:text="@string/watch_dares"
+        android:textAlignment="center"
+        android:textColor="#E91E63"
+        android:textSize="36sp" />
+
+    <Button
+        android:id="@+id/done"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="false"
+        android:layout_alignParentBottom="false"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="156dp"
+        android:layout_marginBottom="10dp"
+        android:text="Done"
+        android:onClick="OnButtonClick"/>
+</RelativeLayout>
+
