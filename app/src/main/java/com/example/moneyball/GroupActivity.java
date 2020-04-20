@@ -148,7 +148,7 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
                 Uri imageUri = Uri.parse(data.getStringExtra("pic"));
                 String heading = data.getStringExtra("headingText");
                 String description = data.getStringExtra("descriptionText");
-                String group = data.getStringExtra("groupNameText");
+                String group = data.getStringExtra("groupIdToPass");
 
 
                 DatabaseReference ref = database.getReference();    //Get database reference
