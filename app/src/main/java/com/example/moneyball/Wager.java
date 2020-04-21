@@ -1,14 +1,16 @@
 package com.example.moneyball;
 
 
+import android.net.Uri;
+
 public class Wager {
-    int picture;
+    String pictureUri;
     String id, heading, description, group;
-    public Wager(String id, String heading, String group, int picture, String description){
+    public Wager(String id, String heading, String group, String pictureUri, String description){
         this.id = id;
         this.heading = heading;
         this.group = group;
-        this.picture = picture;
+        this.pictureUri = pictureUri;
         this.description = description;
     }
 
@@ -20,12 +22,12 @@ public class Wager {
         this.id = id;
     }
 
-    public int getPicture() {
-        return picture;
+    public String getPicture() {
+        return this.pictureUri;
     }
 
-    public void setPicture(int picture) {
-        this.picture = picture;
+    public void setPicture(String picture) {
+        this.pictureUri = picture;
     }
 
     public String getGroup() {

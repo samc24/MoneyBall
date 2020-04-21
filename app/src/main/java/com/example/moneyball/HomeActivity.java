@@ -59,8 +59,8 @@ public class HomeActivity extends AppCompatActivity implements WagerAdapter.Item
                     String groupName = wagerData.get("group").toString();
                     String heading = wagerData.get("heading").toString();
                     String description = wagerData.get("description").toString();
-                    //Long picture = (Long)wagerData.get("picture");
-                    Wager newWager = new Wager(key, heading, groupName, R.drawable.kobe_jersey, description);
+                    String picture = wagerData.get("picture").toString();
+                    Wager newWager = new Wager(key, heading, groupName, picture, description);
                     wagers.add(newWager);
                     wagerAdapter.notifyDataSetChanged();
                 }
@@ -105,7 +105,7 @@ public class HomeActivity extends AppCompatActivity implements WagerAdapter.Item
         String description = ((WagerAdapter) wagerAdapter).getItem(position).getDescription();
         String heading = ((WagerAdapter) wagerAdapter).getItem(position).getHeading();
         String group = ((WagerAdapter) wagerAdapter).getItem(position).getGroup();
-        int pic = ((WagerAdapter) wagerAdapter).getItem(position).getPicture();
+        String pic = ((WagerAdapter) wagerAdapter).getItem(position).getPicture();
         //long id = ((WagerAdapter) wagerAdapter).getItem(position).getId();
 //        Toast.makeText(getApplicationContext(),  description, Toast.LENGTH_SHORT).show();
         Intent openWager = new Intent(getApplicationContext(), WagerActivity.class);
@@ -121,7 +121,7 @@ public class HomeActivity extends AppCompatActivity implements WagerAdapter.Item
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == ADD_WAGER_REQUEST){
             if(resultCode == RESULT_OK){
-                Uri imageUri = Uri.parse(data.getStringExtra("pic"));
+                String imageUri = (data.getStringExtra("pic"));
                 String heading = data.getStringExtra("headingText");
                 String description = data.getStringExtra("descriptionText");
                 String group = data.getStringExtra("groupNameText");
@@ -130,7 +130,7 @@ public class HomeActivity extends AppCompatActivity implements WagerAdapter.Item
                 DatabaseReference ref = database.getReference();
                 DatabaseReference wagerRef = ref.child("wagers").push();
                 String key = wagerRef.getKey();
-                Wager newWager = new Wager(key, heading, group, R.drawable.weather, description); // TODO: add functionality in Wager class for when a uri (imageUri) is passed to be used as prof pic instead of drawable
+                Wager newWager = new Wager(key, heading, group, imageUri, description); // TODO: add functionality in Wager class for when a uri (imageUri) is passed to be used as prof pic instead of drawable
                 wagerRef.setValue(newWager);
                 //wagers.add(newWager);
                 //wagerAdapter.notifyDataSetChanged();

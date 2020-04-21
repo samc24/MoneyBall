@@ -16,12 +16,18 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,6 +35,7 @@ import java.util.HashMap;
 public class GroupActivity extends AppCompatActivity implements WagerAdapter.ItemClickListener {
     private RecyclerView.Adapter wagerAdapter;
     ArrayList<Wager> wagers;
+    final FirebaseStorage storage = FirebaseStorage.getInstance();
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference ref = database.getReference();
     TextView heading;
@@ -76,12 +83,15 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
                         Object data = dataMap.get(key);
                         HashMap<String, Object> wagerData = (HashMap<String, Object>) data;
 
-                        //separate the data by groupname, heading, and description
+                        //separate the data by groupname, heading, and description and pic
                         String groupName = wagerData.get("group").toString();
                         String heading = wagerData.get("heading").toString();
                         String description = wagerData.get("description").toString();
+                        String pic = wagerData.get("picture").toString();
 
-                        Wager newWager = new Wager(key, heading, groupName, R.drawable.kobe_jersey, description);  //create the new wager using the data from above
+                        Log.d("KOBE", pic);
+
+                        Wager newWager = new Wager(key, heading, groupName, pic, description);  //create the new wager using the data from above
                         wagers.add(newWager); //add this wager to a list of wagers
                         wagerAdapter.notifyDataSetChanged();
                     }
@@ -90,9 +100,7 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
             }
-
         });
         wagerAdapter = new WagerAdapter(wagers);
         wagerList.setAdapter(wagerAdapter);
@@ -127,7 +135,7 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
         //Get wager data to be passed to wager activity
         String description = ((WagerAdapter) wagerAdapter).getItem(position).getDescription();
         String heading = ((WagerAdapter) wagerAdapter).getItem(position).getHeading();
-        int pic = ((WagerAdapter) wagerAdapter).getItem(position).getPicture();
+        String pic = ((WagerAdapter) wagerAdapter).getItem(position).getPicture();
 
         Intent openWager = new Intent(getApplicationContext(), WagerActivity.class); //create the intent
         //pass data to intent
@@ -141,21 +149,41 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
 
     }
 
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, final Intent data) {
         if (requestCode == ADD_WAGER_REQUEST){
             if(resultCode == RESULT_OK){
                 //Get data from create wager activity to be used in adding the wager data to the database
-                Uri imageUri = Uri.parse(data.getStringExtra("pic"));
-                String heading = data.getStringExtra("headingText");
-                String description = data.getStringExtra("descriptionText");
-                String group = data.getStringExtra("groupIdToPass");
+                String imageUri = data.getStringExtra("pic");
+                final String heading = data.getStringExtra("headingText");
+                final String description = data.getStringExtra("descriptionText");
+                final String group = data.getStringExtra("groupIdToPass");
 
 
-                DatabaseReference ref = database.getReference();    //Get database reference
-                DatabaseReference wagerRef = ref.child("groups").child(group).child("wagers").push(); //Find specific spot in database to place data (push creates unique key)
-                String key = wagerRef.getKey(); //get the key in order to store it in the wager class
-                Wager newWager = new Wager(key, heading, group, R.drawable.weather, description); //create wager
+                final DatabaseReference ref = database.getReference();    //Get database reference
+                final DatabaseReference wagerRef = ref.child("groups").child(group).child("wagers").push();//Find specific spot in database to place data (push creates unique key)
+                final String key = wagerRef.getKey(); //get the key in order to store it in the wager class
+                final Wager newWager = new Wager(key, heading, group, imageUri, description); //create wager
                 wagerRef.setValue(newWager); //set the value in the database to be that of the wager
+
+                final StorageReference imageStorageReference = storage.getReference().child("images/" + key + ".png");
+                imageStorageReference.putFile(Uri.parse(imageUri)).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        Toast.makeText(getApplicationContext(),  "upload image success!", Toast.LENGTH_SHORT).show();
+                        //get metadata and path from storage
+                        StorageMetadata snapshotMetadata = taskSnapshot.getMetadata();
+                        Task<Uri> downloadUrl = imageStorageReference.getDownloadUrl();
+                        downloadUrl.addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                String imageReference = uri.toString();
+                                Wager newWager = new Wager(key, heading, group, imageReference, description); //create wager
+                                wagerRef.setValue(newWager); //set the value in the database to be that of the wager
+
+                            }
+                        });
+                    }
+                });
             }
             else if (resultCode == RESULT_CANCELED){
                 Toast.makeText(getApplicationContext(),  "New Wager Canceled", Toast.LENGTH_SHORT).show();

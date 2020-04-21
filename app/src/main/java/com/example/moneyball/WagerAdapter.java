@@ -1,14 +1,25 @@
 package com.example.moneyball;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.squareup.picasso.Picasso;
 
 public class WagerAdapter extends RecyclerView.Adapter<WagerAdapter.MyViewHolder>{
     private ArrayList<Wager> mDataset;
@@ -56,8 +67,10 @@ public class WagerAdapter extends RecyclerView.Adapter<WagerAdapter.MyViewHolder
         // - replace the contents of the view with that element
         holder.header.setText(mDataset.get(position).getHeading());
         holder.description.setText(mDataset.get(position).getDescription());
-        holder.picture.setImageResource(mDataset.get(position).getPicture());
 
+        //setting the picture holder with picture url from internet
+        Uri picUri = Uri.parse(mDataset.get(position).getPicture());//turn string from Wager object into url
+        Picasso.get().load(picUri).into(holder.picture);//use PICASSSOOOO for loading picture urls into imageView or whatever holders u need.
     }
 
     // Return the size of your dataset (invoked by the layout manager)

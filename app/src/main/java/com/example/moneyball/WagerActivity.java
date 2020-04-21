@@ -3,12 +3,15 @@ package com.example.moneyball;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.squareup.picasso.Picasso;
 
 public class WagerActivity extends AppCompatActivity {
 
@@ -22,7 +25,12 @@ public class WagerActivity extends AppCompatActivity {
         String heading = extras.getString("heading");
         String group = extras.getString("group");
         long id = extras.getLong("id");
-        int pic = extras.getInt("pic");
+
+        //setting the picture holder with picture url from internet
+        Uri picUri = Uri.parse(extras.getString("pic"));//gets the picture from the bundle as a URL
+        ImageView wagerPic = findViewById(R.id.wagerPic);
+        Picasso.get().load(picUri).into(wagerPic);//use PICASSSOOOO for loading picture urls into imageView or whatever holders u need.
+
         TextView groupName, groupDescription, wagerName, wagerDescription;
         groupDescription = findViewById(R.id.groupDescription);
         groupDescription.setText(groupDesc);
@@ -32,6 +40,7 @@ public class WagerActivity extends AppCompatActivity {
         wagerName.setText(heading);
         wagerDescription = findViewById(R.id.wagerDescription);
         wagerDescription.setText(description);
+
 
         Button bet, challenge, invite;
         bet = findViewById(R.id.bet);
