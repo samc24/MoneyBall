@@ -17,14 +17,14 @@ import com.google.android.youtube.player.YouTubePlayerView;
 
 public class PlaylistActivity extends YouTubeBaseActivity implements YouTubePlayer.OnInitializedListener {
 
-    public static final String API_KEY = "AIzaSyDxC5qiXJG54whorLTnALBSBuGIsJ34GPc";
+    public static final String API_KEY = "AIzaSyBpaOVz2RbGmOk4mqu5T0jqZOZXUpVfWQA";
     public static final String PlayList_ID = "PLoVfRkNxxHfdZYEOrLES85L70ux4zuFUl";
     Button done;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_playlist);
 
         /** Initializing YouTube Player View **/
         YouTubePlayerView youTubePlayerView = (YouTubePlayerView) findViewById(R.id.youtube_player);
