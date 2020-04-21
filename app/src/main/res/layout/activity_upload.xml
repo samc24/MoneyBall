@@ -35,7 +35,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:text="Watch Dares"
-        android:onClick="OnButtonClick"
+        android:onClick="onButtonClick"
         />
 
 </RelativeLayout>
