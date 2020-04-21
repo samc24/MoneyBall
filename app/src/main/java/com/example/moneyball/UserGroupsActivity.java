@@ -52,7 +52,7 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_group);
         RecyclerView groupList = findViewById(R.id.groupList);
-        int numOfColumns = 2;
+        int numOfColumns = 1;
         RecyclerView.LayoutManager recyclerManager = new GridLayoutManager(getApplicationContext(), numOfColumns);
         groupList.setLayoutManager(recyclerManager);
         groups = new ArrayList<>();
@@ -76,6 +76,7 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
                 HashMap<String, Object> userData = (HashMap<String, Object>) dataMap.get("users");
                 HashMap<String, Object> userSpecificData = (HashMap<String, Object>) userData.get(UID);
                 HashMap<String, Object> userGroupData = (HashMap<String, Object>) userSpecificData.get("groups");
+
                 if(userGroupData!=null) {
                     for (String key : userGroupData.keySet()) {
                         Object data = userGroupData.get(key);
@@ -91,7 +92,8 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
                             String heading = groupData.get("heading").toString();
                             String description = groupData.get("description").toString();
                             String groupCreator = groupData.get("groupCreator").toString();
-                            Group newGroup = new Group(key, heading, description, groupCreator);
+                            String groupPic =  groupData.get("picUri").toString();
+                            Group newGroup = new Group(key, heading, description, groupCreator, groupPic);
                             groups.add(newGroup);
                             groupAdapter.notifyDataSetChanged();
                         }
@@ -135,6 +137,7 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
         viewGroup.putExtra("groupId",((GroupAdapter) groupAdapter).getItem(position).getId());
         viewGroup.putExtra("heading",((GroupAdapter) groupAdapter).getItem(position).getHeading());
         viewGroup.putExtra("description",((GroupAdapter) groupAdapter).getItem(position).getDescription());
+        viewGroup.putExtra("groupPic", ((GroupAdapter) groupAdapter).getItem(position).getPicUri());
         startActivity(viewGroup);
     }
 
@@ -147,7 +150,7 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
                 final String heading = data.getStringExtra("headingText");
                 final String description = data.getStringExtra("descriptionText");
                 final String groupCreator = data.getStringExtra("groupCreator");
-                String picUri = data.getStringExtra("pic");
+                String grouppic = data.getStringExtra("pic");
 
                 DatabaseReference ref = database.getReference(); //get db reference
                 final DatabaseReference groupRef = ref.child("groups").push(); //get the path to store the data
@@ -163,9 +166,10 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
                 final DatabaseReference userGroupsRef = ref.child("users").child(UID).child("groups").push(); //get path to store groupID under a users data
                 userGroupsRef.setValue(groupRef.getKey()); //store the group ID (so we know what groups a user is in)=
 
-                if (!picUri.equals("")) {//can't be null as no images selected when pressing means empty string
+                assert grouppic != null;
+                if (!grouppic.equals("")) {//can't be null as no images selected when pressing means empty string
                     final StorageReference imageStorageReference = storage.getReference().child("images/groups/" + key + ".png");
-                    imageStorageReference.putFile(Uri.parse(picUri)).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    imageStorageReference.putFile(Uri.parse(grouppic)).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                             Toast.makeText(getApplicationContext(), "upload image success!", Toast.LENGTH_SHORT).show();
@@ -176,7 +180,7 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
                                 @Override
                                 public void onSuccess(Uri uri) {
                                     String imageReference = uri.toString();
-                                    Group newGroup = new Group(key, heading, description, groupCreator);
+                                    Group newGroup = new Group(key, heading, description, groupCreator, imageReference);
                                     groupRef.setValue(newGroup);
                                 }
                             });
@@ -184,7 +188,7 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
                     });
                 }
                 else {
-                    Group newGroup = new Group(key, heading, description, groupCreator); //create the group
+                    Group newGroup = new Group(key, heading, description, groupCreator, grouppic); //create the group, picUri = "" here
                     groupRef.setValue(newGroup); //set the db value
                 }
             }
@@ -203,8 +207,6 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
 
                 DatabaseReference userGroupsRef = ref.child("users").child(UID).child("groups").push(); //get the correct path to write the data
                 userGroupsRef.setValue(id); //write the data
-
-
             }
 
         }
