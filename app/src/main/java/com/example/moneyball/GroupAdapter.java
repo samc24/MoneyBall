@@ -1,5 +1,6 @@
 package com.example.moneyball;
 
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.squareup.picasso.Picasso;
 
 public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.MyViewHolder>{
     private ArrayList<Group> mDataset;
@@ -20,10 +23,12 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.MyViewHolder
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         // each data item is just a string in this case
         public TextView header, description;
+        private ImageView groupPic;
         public MyViewHolder(View v) {
             super(v);
             header = v.findViewById(R.id.groupHeader);
             description = v.findViewById(R.id.groupDescription);
+            groupPic = v.findViewById(R.id.groupPic);
             v.setOnClickListener(this);
         }
         @Override
@@ -54,6 +59,9 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.MyViewHolder
         // - replace the contents of the view with that element
         holder.header.setText(mDataset.get(position).getHeading());
         holder.description.setText(mDataset.get(position).getDescription());
+
+        Uri picUri = Uri.parse(mDataset.get(position).getPicUri());
+        Picasso.get().load(picUri).into(holder.groupPic);
     }
 
     // Return the size of your dataset (invoked by the layout manager)

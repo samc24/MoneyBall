@@ -93,7 +93,7 @@ public class CreateGroupActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(),  "Please enter group information for all text fields", Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    if (selectedImageUri == null) {
+                    if (selectedImageUri == null || selectedImageUri.toString().equals("")) {
                         picUriStr = ""; //Toast.makeText(getApplicationContext(),  "add pic", Toast.LENGTH_SHORT).show();
                     } else {
                         picUriStr = selectedImageUri.toString();
