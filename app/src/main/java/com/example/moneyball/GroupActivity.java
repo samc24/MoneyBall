@@ -158,32 +158,35 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
                 final String description = data.getStringExtra("descriptionText");
                 final String group = data.getStringExtra("groupIdToPass");
 
-
                 final DatabaseReference ref = database.getReference();    //Get database reference
                 final DatabaseReference wagerRef = ref.child("groups").child(group).child("wagers").push();//Find specific spot in database to place data (push creates unique key)
                 final String key = wagerRef.getKey(); //get the key in order to store it in the wager class
-                final Wager newWager = new Wager(key, heading, group, imageUri, description); //create wager
-                wagerRef.setValue(newWager); //set the value in the database to be that of the wager
 
-                final StorageReference imageStorageReference = storage.getReference().child("images/" + key + ".png");
-                imageStorageReference.putFile(Uri.parse(imageUri)).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        Toast.makeText(getApplicationContext(),  "upload image success!", Toast.LENGTH_SHORT).show();
-                        //get metadata and path from storage
-                        StorageMetadata snapshotMetadata = taskSnapshot.getMetadata();
-                        Task<Uri> downloadUrl = imageStorageReference.getDownloadUrl();
-                        downloadUrl.addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri uri) {
-                                String imageReference = uri.toString();
-                                Wager newWager = new Wager(key, heading, group, imageReference, description); //create wager
-                                wagerRef.setValue(newWager); //set the value in the database to be that of the wager
+                if(!imageUri.equals("")) {//can't be null as no images selected when pressing means empty string
+                   final StorageReference imageStorageReference = storage.getReference().child("images/" + key + ".png");
+                   imageStorageReference.putFile(Uri.parse(imageUri)).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                       @Override
+                       public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                           Toast.makeText(getApplicationContext(), "upload image success!", Toast.LENGTH_SHORT).show();
+                           //get metadata and path from storage
+                           StorageMetadata snapshotMetadata = taskSnapshot.getMetadata();
+                           Task<Uri> downloadUrl = imageStorageReference.getDownloadUrl();
+                           downloadUrl.addOnSuccessListener(new OnSuccessListener<Uri>() {
+                               @Override
+                               public void onSuccess(Uri uri) {
+                                   String imageReference = uri.toString();
+                                   Wager newWager = new Wager(key, heading, group, imageReference, description); //create wager
+                                   wagerRef.setValue(newWager); //set the value in the database to be that of the wager
 
-                            }
-                        });
-                    }
-                });
+                               }
+                           });
+                       }
+                   });
+                }
+                else{//this accounts for when the user doesn't select an image for the wager, imageUri will then be empty string.
+                   final Wager newWager = new Wager(key, heading, group, "", description); //create wager
+                   wagerRef.setValue(newWager); //set the value in the database to be that of the wager
+                }
             }
             else if (resultCode == RESULT_CANCELED){
                 Toast.makeText(getApplicationContext(),  "New Wager Canceled", Toast.LENGTH_SHORT).show();

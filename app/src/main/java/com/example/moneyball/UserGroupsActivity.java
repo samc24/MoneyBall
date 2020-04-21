@@ -12,6 +12,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
@@ -21,6 +23,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,6 +42,7 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
     ArrayList<String> usersGroups;
 
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    FirebaseStorage storage = FirebaseStorage.getInstance();
     DatabaseReference ref = database.getReference();
 
 
@@ -137,14 +144,14 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
             if(resultCode == NEW_GROUP){
                 //This is called if a user creates a new group
                 //get data passed from create group activity
-                String heading = data.getStringExtra("headingText");
-                String description = data.getStringExtra("descriptionText");
-                String groupCreator = data.getStringExtra("groupCreator");
+                final String heading = data.getStringExtra("headingText");
+                final String description = data.getStringExtra("descriptionText");
+                final String groupCreator = data.getStringExtra("groupCreator");
+                String picUri = data.getStringExtra("pic");
 
                 DatabaseReference ref = database.getReference(); //get db reference
-                DatabaseReference groupRef = ref.child("groups").push(); //get the path to store the data
-                String key = groupRef.getKey(); //get the key for storing in a users database
-
+                final DatabaseReference groupRef = ref.child("groups").push(); //get the path to store the data
+                final String key = groupRef.getKey(); //get the key for storing in a users database
 
                 //get current users ID
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -153,12 +160,33 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
                     UID = user.getUid();
                 }
 
-                DatabaseReference userGroupsRef = ref.child("users").child(UID).child("groups").push(); //get path to store groupID under a users data
-                userGroupsRef.setValue(groupRef.getKey()); //store the group ID (so we know what groups a user is in)
+                final DatabaseReference userGroupsRef = ref.child("users").child(UID).child("groups").push(); //get path to store groupID under a users data
+                userGroupsRef.setValue(groupRef.getKey()); //store the group ID (so we know what groups a user is in)=
 
-                Group newGroup = new Group(key, heading, description, groupCreator); //create the group
-                groupRef.setValue(newGroup); //set the db value
-
+                if (!picUri.equals("")) {//can't be null as no images selected when pressing means empty string
+                    final StorageReference imageStorageReference = storage.getReference().child("images/groups/" + key + ".png");
+                    imageStorageReference.putFile(Uri.parse(picUri)).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            Toast.makeText(getApplicationContext(), "upload image success!", Toast.LENGTH_SHORT).show();
+                            //get metadata and path from storage
+                            StorageMetadata snapshotMetadata = taskSnapshot.getMetadata();
+                            Task<Uri> downloadUrl = imageStorageReference.getDownloadUrl();
+                            downloadUrl.addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    String imageReference = uri.toString();
+                                    Group newGroup = new Group(key, heading, description, groupCreator);
+                                    groupRef.setValue(newGroup);
+                                }
+                            });
+                        }
+                    });
+                }
+                else {
+                    Group newGroup = new Group(key, heading, description, groupCreator); //create the group
+                    groupRef.setValue(newGroup); //set the db value
+                }
             }
             if(resultCode == ADD_GROUP){
                 //This is called if a user adds an existing group

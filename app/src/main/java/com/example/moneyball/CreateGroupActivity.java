@@ -1,6 +1,7 @@
 package com.example.moneyball;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
@@ -35,10 +36,14 @@ public class CreateGroupActivity extends AppCompatActivity {
     private final int NEW_GROUP = 123;
     private final int ADD_GROUP = 321;
     Drawable bg;
-    Uri selectedImageUri;
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference ref = database.getReference();
     private FirebaseAuth mAuth;
+    private ImageButton uploadGP;
+    private RelativeLayout groupPicHolder;
+    private Uri selectedImageUri;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +55,26 @@ public class CreateGroupActivity extends AppCompatActivity {
         Button exit = findViewById(R.id.exit);
         Button done = findViewById(R.id.done);
 
+        groupPicHolder = findViewById(R.id.groupPicHolder);
+        final TextView uploadTV = findViewById(R.id.uploadTV);
+        uploadGP = findViewById(R.id.uploadGroupPic);
+        uploadGP.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                uploadTV.setVisibility(View.GONE);
+
+                Intent getIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                getIntent.setType("image/*");
+
+                Intent pickIntent = new Intent(Intent.ACTION_PICK);
+                pickIntent.setDataAndType(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+
+                Intent chooserIntent = Intent.createChooser(getIntent, "Select Image");
+                chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[] {pickIntent});
+
+                startActivityForResult(chooserIntent, PICK_IMAGE);
+            }
+        });
 
         final Intent intent = new Intent();
         done.setOnClickListener(new View.OnClickListener() {
@@ -59,14 +84,28 @@ public class CreateGroupActivity extends AppCompatActivity {
                 String descriptionText = description.getText().toString();
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 String UID = "";
+                String picUriStr = "";
                 if(user!=null){
                     UID = user.getUid();
                 }
-                intent.putExtra("groupCreator", UID);
-                intent.putExtra("headingText", headingText);
-                intent.putExtra("descriptionText", descriptionText);
-                setResult(NEW_GROUP, intent);
-                finish();
+
+                if(headingText.equals("")|| descriptionText.equals("")){
+                    Toast.makeText(getApplicationContext(),  "Please enter group information for all text fields", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    if (selectedImageUri == null) {
+                        picUriStr = ""; //Toast.makeText(getApplicationContext(),  "add pic", Toast.LENGTH_SHORT).show();
+                    } else {
+                        picUriStr = selectedImageUri.toString();
+                    }
+                    Toast.makeText(getApplicationContext(), "Done!", Toast.LENGTH_SHORT).show();
+                    intent.putExtra("groupCreator", UID);
+                    intent.putExtra("headingText", headingText);
+                    intent.putExtra("descriptionText", descriptionText);
+                    intent.putExtra("pic", picUriStr);
+                    setResult(NEW_GROUP, intent);
+                    finish();
+                }
 
             }
         });
@@ -129,5 +168,24 @@ public class CreateGroupActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if(requestCode == PICK_IMAGE){
+            if(resultCode==RESULT_OK){
+                selectedImageUri = data.getData();
+                uploadGP.setVisibility(View.GONE);
+                RelativeLayout layout = findViewById(R.id.groupPicHolder);
+                InputStream inputStream = null;
+                try {
+                    inputStream = getContentResolver().openInputStream(selectedImageUri);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                bg = Drawable.createFromStream(inputStream, selectedImageUri.toString());
+                layout.setBackground(bg);
+            }
+        }
     }
 }
