@@ -1,7 +1,6 @@
 package com.example.moneyball;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -12,12 +11,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.FileNotFoundException;
@@ -34,7 +31,7 @@ public class CreateWagerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_wager);
-        upload = findViewById(R.id.upload);
+        upload = findViewById(R.id.uploadGroupPic);
         final TextView uploadTV = findViewById(R.id.uploadTV);
         final EditText heading = findViewById(R.id.heading);
         final EditText description = findViewById(R.id.description);
@@ -91,7 +88,7 @@ public class CreateWagerActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(),  "Please enter wager information for all text fields", Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    if(selectedImageUri==null){
+                    if(selectedImageUri==null || selectedImageUri.toString().equals("")){
                         uriStr = ""; //Toast.makeText(getApplicationContext(),  "add pic", Toast.LENGTH_SHORT).show();
                     }
                     else {
@@ -123,7 +120,7 @@ public class CreateWagerActivity extends AppCompatActivity {
             if(resultCode==RESULT_OK){
                 selectedImageUri = data.getData();
                 upload.setVisibility(View.GONE);
-                RelativeLayout layout = findViewById(R.id.relativeLayout);
+                RelativeLayout layout = findViewById(R.id.groupPicHolder);
                 InputStream inputStream = null;
                 try {
                     inputStream = getContentResolver().openInputStream(selectedImageUri);

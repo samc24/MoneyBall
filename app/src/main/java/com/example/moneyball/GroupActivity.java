@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,6 +29,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,24 +46,32 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
     String groupId;
     String groupHeading;
     String groupDescription;
+    Uri groupPicUri;
+    ImageView groupPic;
     public static final int ADD_WAGER_REQUEST = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group);
 
-
+//        Bundle extras = getIntent().getExtras();
         Intent intent = getIntent(); //get intent that was passed from the previous page
         //get data passed from intent
         final String groupId = intent.getStringExtra("groupId");
         groupDescription = intent.getStringExtra("description");
         groupHeading = intent.getStringExtra("heading");
+        groupPicUri = Uri.parse(intent.getStringExtra("groupPic"));
 
         //initialize views
         heading = findViewById(R.id.tvGroup_Title);
         description = findViewById(R.id.tvGroup_Description);
         backButton = findViewById(R.id.btnGroup_Back);
         RecyclerView wagerList = findViewById(R.id.group_bets);
+        groupPic = findViewById(R.id.groupPic);
+
+        //sets the groupPic within this activity:
+        Picasso.get().load(groupPicUri).into(groupPic);
 
         //set the heading and description text for the group
         heading.setText(groupHeading);
@@ -129,6 +139,7 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
         });
 
     }
+
     @Override
     // https://stackoverflow.com/questions/40587168/simple-android-grid-example-using-recyclerview-with-gridlayoutmanager-like-the
     public void onItemClick(View view, int position) {
@@ -144,7 +155,8 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
         openWager.putExtra("group", groupHeading);
         openWager.putExtra("groupDescription", groupDescription);
         openWager.putExtra("id", 0L); // change 0L to id
-        openWager.putExtra("pic", pic);
+        openWager.putExtra("pic", pic);//THIS IS THE WAGER PICTURE
+        openWager.putExtra("groupPic", groupPicUri.toString());
         startActivity(openWager);
 
     }
@@ -158,32 +170,35 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
                 final String description = data.getStringExtra("descriptionText");
                 final String group = data.getStringExtra("groupIdToPass");
 
-
                 final DatabaseReference ref = database.getReference();    //Get database reference
                 final DatabaseReference wagerRef = ref.child("groups").child(group).child("wagers").push();//Find specific spot in database to place data (push creates unique key)
                 final String key = wagerRef.getKey(); //get the key in order to store it in the wager class
-                final Wager newWager = new Wager(key, heading, group, imageUri, description); //create wager
-                wagerRef.setValue(newWager); //set the value in the database to be that of the wager
 
-                final StorageReference imageStorageReference = storage.getReference().child("images/" + key + ".png");
-                imageStorageReference.putFile(Uri.parse(imageUri)).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        Toast.makeText(getApplicationContext(),  "upload image success!", Toast.LENGTH_SHORT).show();
-                        //get metadata and path from storage
-                        StorageMetadata snapshotMetadata = taskSnapshot.getMetadata();
-                        Task<Uri> downloadUrl = imageStorageReference.getDownloadUrl();
-                        downloadUrl.addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri uri) {
-                                String imageReference = uri.toString();
-                                Wager newWager = new Wager(key, heading, group, imageReference, description); //create wager
-                                wagerRef.setValue(newWager); //set the value in the database to be that of the wager
+                if(!imageUri.equals("")) {//can't be null as no images selected when pressing means empty string
+                   final StorageReference imageStorageReference = storage.getReference().child("images/" + key + ".png");
+                   imageStorageReference.putFile(Uri.parse(imageUri)).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                       @Override
+                       public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                           Toast.makeText(getApplicationContext(), "upload image success!", Toast.LENGTH_SHORT).show();
+                           //get metadata and path from storage
+                           StorageMetadata snapshotMetadata = taskSnapshot.getMetadata();
+                           Task<Uri> downloadUrl = imageStorageReference.getDownloadUrl();
+                           downloadUrl.addOnSuccessListener(new OnSuccessListener<Uri>() {
+                               @Override
+                               public void onSuccess(Uri uri) {
+                                   String imageReference = uri.toString();
+                                   Wager newWager = new Wager(key, heading, group, imageReference, description); //create wager
+                                       wagerRef.setValue(newWager); //set the value in the database to be that of the wager
 
-                            }
-                        });
-                    }
-                });
+                               }
+                           });
+                       }
+                   });
+                }
+                else{//this accounts for when the user doesn't select an image for the wager, imageUri will then be empty string.
+                   final Wager newWager = new Wager(key, heading, group, "", description); //create wager
+                   wagerRef.setValue(newWager); //set the value in the database to be that of the wager
+                }
             }
             else if (resultCode == RESULT_CANCELED){
                 Toast.makeText(getApplicationContext(),  "New Wager Canceled", Toast.LENGTH_SHORT).show();

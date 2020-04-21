@@ -26,6 +26,11 @@ public class WagerActivity extends AppCompatActivity {
         String group = extras.getString("group");
         long id = extras.getLong("id");
 
+        //setting the group picture holder
+        Uri groupPicUri = Uri.parse(extras.getString("groupPic"));
+        ImageView groupPicHolder = findViewById(R.id.groupPic);
+        Picasso.get().load(groupPicUri).into(groupPicHolder);
+
         //setting the picture holder with picture url from internet
         Uri picUri = Uri.parse(extras.getString("pic"));//gets the picture from the bundle as a URL
         ImageView wagerPic = findViewById(R.id.wagerPic);

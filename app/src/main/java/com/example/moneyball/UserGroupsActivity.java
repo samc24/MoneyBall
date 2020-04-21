@@ -12,6 +12,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
@@ -21,6 +23,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,6 +42,7 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
     ArrayList<String> usersGroups;
 
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    FirebaseStorage storage = FirebaseStorage.getInstance();
     DatabaseReference ref = database.getReference();
 
 
@@ -45,7 +52,7 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_group);
         RecyclerView groupList = findViewById(R.id.groupList);
-        int numOfColumns = 2;
+        int numOfColumns = 1;
         RecyclerView.LayoutManager recyclerManager = new GridLayoutManager(getApplicationContext(), numOfColumns);
         groupList.setLayoutManager(recyclerManager);
         groups = new ArrayList<>();
@@ -69,6 +76,7 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
                 HashMap<String, Object> userData = (HashMap<String, Object>) dataMap.get("users");
                 HashMap<String, Object> userSpecificData = (HashMap<String, Object>) userData.get(UID);
                 HashMap<String, Object> userGroupData = (HashMap<String, Object>) userSpecificData.get("groups");
+
                 if(userGroupData!=null) {
                     for (String key : userGroupData.keySet()) {
                         Object data = userGroupData.get(key);
@@ -84,7 +92,8 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
                             String heading = groupData.get("heading").toString();
                             String description = groupData.get("description").toString();
                             String groupCreator = groupData.get("groupCreator").toString();
-                            Group newGroup = new Group(key, heading, description, groupCreator);
+                            String groupPic =  groupData.get("picUri").toString();
+                            Group newGroup = new Group(key, heading, description, groupCreator, groupPic);
                             groups.add(newGroup);
                             groupAdapter.notifyDataSetChanged();
                         }
@@ -128,6 +137,7 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
         viewGroup.putExtra("groupId",((GroupAdapter) groupAdapter).getItem(position).getId());
         viewGroup.putExtra("heading",((GroupAdapter) groupAdapter).getItem(position).getHeading());
         viewGroup.putExtra("description",((GroupAdapter) groupAdapter).getItem(position).getDescription());
+        viewGroup.putExtra("groupPic", ((GroupAdapter) groupAdapter).getItem(position).getPicUri());
         startActivity(viewGroup);
     }
 
@@ -137,14 +147,14 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
             if(resultCode == NEW_GROUP){
                 //This is called if a user creates a new group
                 //get data passed from create group activity
-                String heading = data.getStringExtra("headingText");
-                String description = data.getStringExtra("descriptionText");
-                String groupCreator = data.getStringExtra("groupCreator");
+                final String heading = data.getStringExtra("headingText");
+                final String description = data.getStringExtra("descriptionText");
+                final String groupCreator = data.getStringExtra("groupCreator");
+                String grouppic = data.getStringExtra("pic");
 
                 DatabaseReference ref = database.getReference(); //get db reference
-                DatabaseReference groupRef = ref.child("groups").push(); //get the path to store the data
-                String key = groupRef.getKey(); //get the key for storing in a users database
-
+                final DatabaseReference groupRef = ref.child("groups").push(); //get the path to store the data
+                final String key = groupRef.getKey(); //get the key for storing in a users database
 
                 //get current users ID
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -153,12 +163,34 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
                     UID = user.getUid();
                 }
 
-                DatabaseReference userGroupsRef = ref.child("users").child(UID).child("groups").push(); //get path to store groupID under a users data
-                userGroupsRef.setValue(groupRef.getKey()); //store the group ID (so we know what groups a user is in)
+                final DatabaseReference userGroupsRef = ref.child("users").child(UID).child("groups").push(); //get path to store groupID under a users data
+                userGroupsRef.setValue(groupRef.getKey()); //store the group ID (so we know what groups a user is in)=
 
-                Group newGroup = new Group(key, heading, description, groupCreator); //create the group
-                groupRef.setValue(newGroup); //set the db value
-
+                assert grouppic != null;
+                if (!grouppic.equals("")) {//can't be null as no images selected when pressing means empty string
+                    final StorageReference imageStorageReference = storage.getReference().child("images/groups/" + key + ".png");
+                    imageStorageReference.putFile(Uri.parse(grouppic)).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            Toast.makeText(getApplicationContext(), "upload image success!", Toast.LENGTH_SHORT).show();
+                            //get metadata and path from storage
+                            StorageMetadata snapshotMetadata = taskSnapshot.getMetadata();
+                            Task<Uri> downloadUrl = imageStorageReference.getDownloadUrl();
+                            downloadUrl.addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    String imageReference = uri.toString();
+                                    Group newGroup = new Group(key, heading, description, groupCreator, imageReference);
+                                    groupRef.setValue(newGroup);
+                                }
+                            });
+                        }
+                    });
+                }
+                else {
+                    Group newGroup = new Group(key, heading, description, groupCreator, grouppic); //create the group, picUri = "" here
+                    groupRef.setValue(newGroup); //set the db value
+                }
             }
             if(resultCode == ADD_GROUP){
                 //This is called if a user adds an existing group
@@ -175,8 +207,6 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
 
                 DatabaseReference userGroupsRef = ref.child("users").child(UID).child("groups").push(); //get the correct path to write the data
                 userGroupsRef.setValue(id); //write the data
-
-
             }
 
         }
