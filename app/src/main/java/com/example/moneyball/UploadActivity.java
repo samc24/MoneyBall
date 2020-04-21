@@ -55,7 +55,7 @@ public class UploadActivity extends AppCompatActivity implements View.OnClickLis
 
     }
 
-    public void OnButtonClick(View view) {
+    public void onButtonClick(View view) {
         Intent myIntent = new Intent(UploadActivity.this,  PlaylistActivity.class);
         startActivity(myIntent);
     }
