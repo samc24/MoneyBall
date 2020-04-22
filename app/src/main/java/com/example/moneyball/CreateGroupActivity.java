@@ -132,7 +132,7 @@ public class CreateGroupActivity extends AppCompatActivity {
                                 String groupId = groupData.get("id").toString();
                                 Log.d("joingroup", heading);
                                 Log.d("joingroup", group);
-                                if(heading.equals(group)){
+                                if(groupId.equals(group)){
                                     Log.d("joingroup", "EQUALS!");
                                     intent.putExtra("groupCreator", groupCreator);
                                     intent.putExtra("headingText", heading);

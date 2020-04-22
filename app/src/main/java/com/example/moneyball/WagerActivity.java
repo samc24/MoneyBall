@@ -118,7 +118,11 @@ public class WagerActivity extends AppCompatActivity {
         invite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO: Send invite link of group to ppl
+                Intent sendIntent = new Intent(Intent.ACTION_VIEW);
+                sendIntent.setData(Uri.parse("sms:"));
+
+                sendIntent.putExtra("sms_body", "Hey! I'd to invite you to my group. Use this code to join it on the MoneyBall app! Code: " + groupId);
+                startActivity(sendIntent);
                 Toast.makeText(getApplicationContext(),  "Invite your friends!", Toast.LENGTH_SHORT).show();
             }
         });
