@@ -156,7 +156,7 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
                 Intent sendIntent = new Intent(Intent.ACTION_VIEW);
                 sendIntent.setData(Uri.parse("sms:"));
 
-                sendIntent.putExtra("sms_body", "Hey! I'd to invite you to my group. Use this code to join it on the MoneyBall app! Code: " + groupId);
+                sendIntent.putExtra("sms_body", "Hey! I'd like to invite you to my group. Use this code to join it on the MoneyBall app! Code: " + groupId);
                 startActivity(sendIntent);
                 Toast.makeText(getApplicationContext(),  "Invite your friends!", Toast.LENGTH_SHORT).show();
             }
