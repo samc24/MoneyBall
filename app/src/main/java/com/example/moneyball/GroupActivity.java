@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -20,6 +21,8 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -31,6 +34,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -48,6 +52,7 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
     String groupDescription;
     Uri groupPicUri;
     ImageView groupPic;
+    String groupIdToPass;
     public static final int ADD_WAGER_REQUEST = 1;
 
     @Override
@@ -59,6 +64,7 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
         Intent intent = getIntent(); //get intent that was passed from the previous page
         //get data passed from intent
         final String groupId = intent.getStringExtra("groupId");
+        groupIdToPass = groupId;
         groupDescription = intent.getStringExtra("description");
         groupHeading = intent.getStringExtra("heading");
         groupPicUri = Uri.parse(intent.getStringExtra("groupPic"));
@@ -98,10 +104,13 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
                         String heading = wagerData.get("heading").toString();
                         String description = wagerData.get("description").toString();
                         String pic = wagerData.get("picture").toString();
+                        String wagerCreator = wagerData.get("wagerCreator").toString();
+                        ArrayList<String> usersList = (ArrayList<String>)wagerData.get("usersList");
+                        Boolean openStatus = (Boolean)wagerData.get("openStatus");
 
                         Log.d("KOBE", pic);
 
-                        Wager newWager = new Wager(key, heading, groupName, pic, description);  //create the new wager using the data from above
+                        Wager newWager = new Wager(key, heading, groupName, pic, description, wagerCreator, usersList, openStatus);  //create the new wager using the data from above
                         wagers.add(newWager); //add this wager to a list of wagers
                         wagerAdapter.notifyDataSetChanged();
                     }
@@ -144,17 +153,24 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
     // https://stackoverflow.com/questions/40587168/simple-android-grid-example-using-recyclerview-with-gridlayoutmanager-like-the
     public void onItemClick(View view, int position) {
         //Get wager data to be passed to wager activity
+        ArrayList<String> usersList = ((WagerAdapter) wagerAdapter).getItem(position).getUsersList();
         String description = ((WagerAdapter) wagerAdapter).getItem(position).getDescription();
         String heading = ((WagerAdapter) wagerAdapter).getItem(position).getHeading();
         String pic = ((WagerAdapter) wagerAdapter).getItem(position).getPicture();
+        String id = ((WagerAdapter) wagerAdapter).getItem(position).getId();
+        String wagerCreator = ((WagerAdapter) wagerAdapter).getItem(position).getWagerCreator();
 
         Intent openWager = new Intent(getApplicationContext(), WagerActivity.class); //create the intent
         //pass data to intent
+
+        openWager.putExtra("usersList", usersList);
         openWager.putExtra("description", description);
         openWager.putExtra("heading", heading);
+        openWager.putExtra("wagerCreator", wagerCreator);
         openWager.putExtra("group", groupHeading);
         openWager.putExtra("groupDescription", groupDescription);
-        openWager.putExtra("id", 0L); // change 0L to id
+        openWager.putExtra("groupId", groupIdToPass);
+        openWager.putExtra("id", id); // change 0L to id
         openWager.putExtra("pic", pic);//THIS IS THE WAGER PICTURE
         openWager.putExtra("groupPic", groupPicUri.toString());
         startActivity(openWager);
@@ -187,7 +203,14 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
                                @Override
                                public void onSuccess(Uri uri) {
                                    String imageReference = uri.toString();
-                                   Wager newWager = new Wager(key, heading, group, imageReference, description); //create wager
+                                   FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                                   String UID = "";
+                                   if(user!=null){
+                                       UID = user.getUid();
+                                   }
+                                   ArrayList<String> usersList = new ArrayList<String>(); //new list of users that have entered the wager
+                                   usersList.add(UID); //auto add the creator of the wager
+                                   Wager newWager = new Wager(key, heading, group, imageReference, description, UID, usersList, true); //create wager
                                        wagerRef.setValue(newWager); //set the value in the database to be that of the wager
 
                                }
@@ -196,7 +219,14 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
                    });
                 }
                 else{//this accounts for when the user doesn't select an image for the wager, imageUri will then be empty string.
-                   final Wager newWager = new Wager(key, heading, group, "", description); //create wager
+                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                    String UID = "";
+                    if(user!=null){
+                        UID = user.getUid();
+                    }
+                    ArrayList<String> usersList = new ArrayList<String>(); //new list of users that have entered the wager
+                    usersList.add(UID); //auto add the creator of the wager
+                   final Wager newWager = new Wager(key, heading, group, "", description, UID, usersList, true); //create wager
                    wagerRef.setValue(newWager); //set the value in the database to be that of the wager
                 }
             }

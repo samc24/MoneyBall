@@ -60,7 +60,10 @@ public class HomeActivity extends AppCompatActivity implements WagerAdapter.Item
                     String heading = wagerData.get("heading").toString();
                     String description = wagerData.get("description").toString();
                     String picture = wagerData.get("picture").toString();
-                    Wager newWager = new Wager(key, heading, groupName, picture, description);
+                    String wagerCreator = wagerData.get("wagerCreator").toString();
+                    ArrayList<String> usersList = (ArrayList<String>)wagerData.get("usersList");
+                    Boolean openStatus = (Boolean)wagerData.get("openStatus");
+                    Wager newWager = new Wager(key, heading, groupName, picture, description, wagerCreator, usersList, openStatus);
                     wagers.add(newWager);
                     wagerAdapter.notifyDataSetChanged();
                 }
@@ -130,7 +133,14 @@ public class HomeActivity extends AppCompatActivity implements WagerAdapter.Item
                 DatabaseReference ref = database.getReference();
                 DatabaseReference wagerRef = ref.child("wagers").push();
                 String key = wagerRef.getKey();
-                Wager newWager = new Wager(key, heading, group, imageUri, description); // TODO: add functionality in Wager class for when a uri (imageUri) is passed to be used as prof pic instead of drawable
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                String UID = "";
+                if(user!=null){
+                    UID = user.getUid();
+                }
+                ArrayList<String> usersList = new ArrayList<String>(); //new list of users that have entered the wager
+                usersList.add(UID); //auto add the creator of the wager
+                final Wager newWager = new Wager(key, heading, group, imageUri, description, UID, usersList, true); //create wager // TODO: add functionality in Wager class for when a uri (imageUri) is passed to be used as prof pic instead of drawable
                 wagerRef.setValue(newWager);
                 //wagers.add(newWager);
                 //wagerAdapter.notifyDataSetChanged();
