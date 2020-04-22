@@ -35,7 +35,6 @@ public class CreateWagerActivity extends AppCompatActivity {
         final TextView uploadTV = findViewById(R.id.uploadTV);
         final EditText heading = findViewById(R.id.heading);
         final EditText description = findViewById(R.id.description);
-        final EditText groupName = findViewById(R.id.groupName);
         Button exit = findViewById(R.id.exit);
         Button done = findViewById(R.id.done);
         Intent groupInfo = getIntent();
@@ -66,7 +65,6 @@ public class CreateWagerActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String headingText = heading.getText().toString();
                 String descriptionText = description.getText().toString();
-                String groupNameText = groupName.getText().toString();
                 String groupIdToPass = groupId;
                 Log.d("tag", groupIdToPass);
                 //DatabaseReference ref = database.getReference();
@@ -84,7 +82,7 @@ public class CreateWagerActivity extends AppCompatActivity {
 //                setResult(RESULT_OK, intent);
 //                finish();
 
-                if(headingText.equals("")|| descriptionText.equals("")|| groupNameText.equals("")){
+                if(headingText.equals("")|| descriptionText.equals("")){
                     Toast.makeText(getApplicationContext(),  "Please enter wager information for all text fields", Toast.LENGTH_SHORT).show();
                 }
                 else {
