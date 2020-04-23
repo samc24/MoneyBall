@@ -85,6 +85,10 @@ public class WagerActivity extends AppCompatActivity {
             btn_closeWager.setText("Close Wager");
 //            btn_closeWager.setVisibility(VISIBLE);
         }
+        else if(usersList!=null && usersList.contains(UID)) {
+            btn_closeWager.setVisibility(View.GONE);
+            potentialChallengeText.setVisibility(View.GONE);
+        }
 
         if(btn_closeWager.getText().toString().equalsIgnoreCase("Close Wager")) {
             potentialChallengeText.setVisibility(INVISIBLE);
@@ -119,9 +123,12 @@ public class WagerActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(),  "Enter one potential challenge!", Toast.LENGTH_SHORT).show();
                     else {
                         intent.putExtra("potentialChallenge", potentialChallenge);
+                        Log.d("CHL", potentialChallenge);
                         intent.putExtra("position", position);
                         Toast.makeText(getApplicationContext(), "Joined Wager", Toast.LENGTH_SHORT).show();
                         btn_closeWager.setVisibility(View.GONE);
+                        setResult(RESULT_OK, intent);
+                        finish();
                     }
                 }
             }

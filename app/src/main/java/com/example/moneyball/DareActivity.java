@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
@@ -40,6 +41,7 @@ public class DareActivity extends AppCompatActivity implements Animation.Animati
         setContentView(R.layout.activity_dare);
         Bundle extras = getIntent().getExtras();
         ArrayList<String> challengeList = extras.getStringArrayList("challengeList");
+        Log.d("CHL", challengeList.toString());
         int size = challengeList.size(), challenge_id;
         String[] challenges = {"one", "two", "three", "four", "five", "six"};
         for (int i = 0; i <6; i++){

@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -26,7 +28,7 @@ public class CreateWagerActivity extends AppCompatActivity {
     Drawable bg;
     Uri selectedImageUri;
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
-    String uriStr;
+    String uriStr, valBet;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +44,27 @@ public class CreateWagerActivity extends AppCompatActivity {
         Button done = findViewById(R.id.done);
         Intent groupInfo = getIntent();
         final String groupId = groupInfo.getStringExtra("groupId");
+
+        betValText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                valBet = betValText.getText().toString();
+                Log.d("BET", "afterTextChanged, before .00: " +valBet);
+                if(!valBet.contains("."))
+                    valBet=valBet+".00";
+                Log.d("BET", "afterTextChanged, before .00: " +valBet);
+            }
+        });
 
         upload.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,10 +92,11 @@ public class CreateWagerActivity extends AppCompatActivity {
                 String headingText = heading.getText().toString();
                 String descriptionText = description.getText().toString();
                 String groupIdToPass = groupId;
-                String valBet = betValText.getText().toString();
-                if(!valBet.contains("."))
-                    valBet=valBet+".00";
+//                String valBet = betValText.getText().toString();
+//                if(!valBet.contains("."))
+//                    valBet=valBet+".00";
                 double betVal = Double.parseDouble(valBet);
+                Log.d("BET", "done onClick: "+betVal);
                 String potentialChallenge = potentialChallengeText.getText().toString();
                 Log.d("tag", groupIdToPass);
                 //DatabaseReference ref = database.getReference();

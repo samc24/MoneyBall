@@ -108,7 +108,7 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
                         String wagerCreator = wagerData.get("wagerCreator").toString();
                         ArrayList<String> usersList = (ArrayList<String>)wagerData.get("usersList");
                         Boolean openStatus = (Boolean)wagerData.get("openStatus");
-                        double betVal = (double) wagerData.get("betVal");
+                        double betVal = Double.parseDouble(wagerData.get("betVal")+"");
                         ArrayList<String> challengeList = (ArrayList<String>)wagerData.get("challengeList");
 
                         Log.d("BET", "onDataChange: " + betVal);
@@ -211,7 +211,7 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
                 final String heading = data.getStringExtra("headingText");
                 final String description = data.getStringExtra("descriptionText");
                 final String group = data.getStringExtra("groupIdToPass");
-                final double betVal = data.getDoubleExtra("betVal", 1.0D);
+                betVal = (double) data.getDoubleExtra("betVal", 1.0D);
                 final String potentialChallenge = data.getStringExtra("potentialChallenge");
                 Log.d("BET", "onActivityRes: " + betVal);
 
