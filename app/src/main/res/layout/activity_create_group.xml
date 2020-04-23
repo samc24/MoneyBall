@@ -57,7 +57,7 @@
         android:layout_marginTop="464dp"
         android:layout_marginEnd="96dp"
         android:ems="10"
-        android:hint="Enter Group Name"
+        android:hint="Enter Group Code"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
