@@ -181,6 +181,7 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
         String wagerCreator = ((WagerAdapter) wagerAdapter).getItem(position).getWagerCreator();
         double betVal = ((WagerAdapter) wagerAdapter).getItem(position).getBetVal();
         ArrayList<String> challengeList = ((WagerAdapter) wagerAdapter).getItem(position).getChallengeList();
+        Log.d("CHL", "itemClick:" + challengeList.toString());
 
         Intent openWager = new Intent(getApplicationContext(), WagerActivity.class); //create the intent
         //pass data to intent
@@ -199,7 +200,7 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
         openWager.putExtra("challengeList", challengeList);
         openWager.putExtra("position", position);
         Log.d("BET", "onItemClick: " + betVal);
-        startActivityForResult(openWager, JOIN_WAGER);
+        startActivity(openWager);
 
     }
 
@@ -266,17 +267,6 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
             else if (resultCode == RESULT_CANCELED){
                 Toast.makeText(getApplicationContext(),  "New Wager Canceled", Toast.LENGTH_SHORT).show();
             }
-        }
-
-        else if (requestCode == JOIN_WAGER){
-            if(resultCode == RESULT_OK){
-                String potentialChallenge = data.getStringExtra("potentialChallenge");
-                int position = data.getIntExtra("position", 0);
-                ArrayList<String> challengeList = ((WagerAdapter) wagerAdapter).getItem(position).getChallengeList();
-                challengeList.add(potentialChallenge);
-                ((WagerAdapter) wagerAdapter).getItem(position).setChallengeList(challengeList);
-            }
-
         }
     }
 }

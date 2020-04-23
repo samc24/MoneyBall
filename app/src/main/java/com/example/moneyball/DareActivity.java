@@ -41,7 +41,7 @@ public class DareActivity extends AppCompatActivity implements Animation.Animati
         setContentView(R.layout.activity_dare);
         Bundle extras = getIntent().getExtras();
         ArrayList<String> challengeList = extras.getStringArrayList("challengeList");
-        Log.d("CHL", challengeList.toString());
+        Log.d("CHL", "dare onCreate: "+challengeList.toString());
         int size = challengeList.size(), challenge_id;
         String[] challenges = {"one", "two", "three", "four", "five", "six"};
         for (int i = 0; i <6; i++){

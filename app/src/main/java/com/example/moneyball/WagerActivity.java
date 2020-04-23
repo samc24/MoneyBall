@@ -122,13 +122,12 @@ public class WagerActivity extends AppCompatActivity {
                     if(potentialChallenge.equals(""))
                         Toast.makeText(getApplicationContext(),  "Enter one potential challenge!", Toast.LENGTH_SHORT).show();
                     else {
-                        intent.putExtra("potentialChallenge", potentialChallenge);
-                        Log.d("CHL", potentialChallenge);
-                        intent.putExtra("position", position);
+                        challengeList.add(potentialChallenge);
+                        final DatabaseReference challengeListRef = ref.child("groups").child(groupId).child("wagers").child(id).child("challengeList");
+                        challengeListRef.setValue(challengeList);
                         Toast.makeText(getApplicationContext(), "Joined Wager", Toast.LENGTH_SHORT).show();
                         btn_closeWager.setVisibility(View.GONE);
-                        setResult(RESULT_OK, intent);
-                        finish();
+                        potentialChallengeText.setVisibility(View.GONE);
                     }
                 }
             }
