@@ -33,7 +33,7 @@ public class PlaylistActivity extends YouTubeBaseActivity implements YouTubePlay
 
     @Override
     public void onInitializationFailure(Provider provider, YouTubeInitializationResult result) {
-        Toast.makeText(this, "Failured to Initialize!", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Failed to Initialize!", Toast.LENGTH_LONG).show();
     }
     @Override
     public void onInitializationSuccess(Provider provider, YouTubePlayer player, boolean wasRestored) {

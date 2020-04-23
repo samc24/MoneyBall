@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,7 +39,11 @@ public class WagerActivity extends AppCompatActivity {
         final String id = extras.getString("id");
         final String groupId = extras.getString("groupId");
         final ArrayList<String> usersList = extras.getStringArrayList("usersList");
-
+        double betVal = extras.getDouble("betVal");
+        final ArrayList<String> challengeList = extras.getStringArrayList("challengeList");
+        Log.d("BET", "wager onCreate: " + betVal);
+        final EditText potentialChallengeText = findViewById(R.id.potentialChallenge);
+        final int position = extras.getInt("position");
 
         //setting the group picture holder
         Uri groupPicUri = Uri.parse(extras.getString("groupPic"));
@@ -50,7 +55,7 @@ public class WagerActivity extends AppCompatActivity {
         ImageView wagerPic = findViewById(R.id.wagerPic);
         Picasso.get().load(picUri).into(wagerPic);//use PICASSSOOOO for loading picture urls into imageView or whatever holders u need.
 
-        TextView groupName, groupDescription, wagerName, wagerDescription;
+        TextView groupName, groupDescription, wagerName, wagerDescription, betValTV;
         groupDescription = findViewById(R.id.groupDescription);
         groupDescription.setText(groupDesc);
         groupName = findViewById(R.id.groupName);
@@ -59,30 +64,66 @@ public class WagerActivity extends AppCompatActivity {
         wagerName.setText(heading);
         wagerDescription = findViewById(R.id.wagerDescription);
         wagerDescription.setText(description);
+        betValTV = findViewById(R.id.betValTV);
+        betValTV.setText("Value: $"+betVal);
 
 
-        Button bet, challenge, invite, btn_closeWager;
+        final Button bet, challenge, invite, btn_closeWager;
         bet = findViewById(R.id.bet);
         challenge = findViewById(R.id.challenge);
         invite = findViewById(R.id.invite);
         btn_closeWager = findViewById(R.id.btn_closeWager);
-        btn_closeWager.setVisibility(INVISIBLE);
+
+
+//        btn_closeWager.setVisibility(INVISIBLE);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         String UID = "";
         if(user!=null){
             UID = user.getUid();
         }
         if(UID.equals(wagerCreator)){
-            btn_closeWager.setVisibility(VISIBLE);
+            btn_closeWager.setText("Close Wager");
+//            btn_closeWager.setVisibility(VISIBLE);
         }
 
+        if(btn_closeWager.getText().toString().equalsIgnoreCase("Close Wager")) {
+            potentialChallengeText.setVisibility(INVISIBLE);
+            Log.d("TEST", "admin");
+        }
         btn_closeWager.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //sets the wager openStatus to false (closed)
-                DatabaseReference ref = database.getReference(); //get db reference
-                final DatabaseReference openStatusRef = ref.child("groups").child(groupId).child("wagers").child(id).child("openStatus");
-                openStatusRef.setValue(false);
+                if(btn_closeWager.getText().toString().equalsIgnoreCase("Close Wager")) {
+                    DatabaseReference ref = database.getReference(); //get db reference
+                    final DatabaseReference openStatusRef = ref.child("groups").child(groupId).child("wagers").child(id).child("openStatus");
+                    openStatusRef.setValue(false);
+                    Toast.makeText(getApplicationContext(), "Wager Closed", Toast.LENGTH_LONG).show();
+                    btn_closeWager.setVisibility(View.GONE);
+                }
+                else{
+                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                    String UID = "";
+                    if(user!=null){
+                        UID = user.getUid();
+                    }
+                    if(usersList.contains(UID)==false) {
+                        usersList.add(UID);
+                    }
+                    DatabaseReference ref = database.getReference(); //get db reference
+                    final DatabaseReference usersListRef = ref.child("groups").child(groupId).child("wagers").child(id).child("usersList");
+                    usersListRef.setValue(usersList);
+                    Intent intent = new Intent();
+                    String potentialChallenge = potentialChallengeText.getText().toString();
+                    if(potentialChallenge.equals(""))
+                        Toast.makeText(getApplicationContext(),  "Enter one potential challenge!", Toast.LENGTH_SHORT).show();
+                    else {
+                        intent.putExtra("potentialChallenge", potentialChallenge);
+                        intent.putExtra("position", position);
+                        Toast.makeText(getApplicationContext(), "Joined Wager", Toast.LENGTH_SHORT).show();
+                        btn_closeWager.setVisibility(View.GONE);
+                    }
+                }
             }
         });
 
@@ -90,17 +131,17 @@ public class WagerActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // TODO: Izzy link ur payment stuff here
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                String UID = "";
-                if(user!=null){
-                    UID = user.getUid();
-                }
-                if(usersList.contains(UID)==false) {
-                    usersList.add(UID);
-                }
-                DatabaseReference ref = database.getReference(); //get db reference
-                final DatabaseReference usersListRef = ref.child("groups").child(groupId).child("wagers").child(id).child("usersList");
-                usersListRef.setValue(usersList);
+//                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+//                String UID = "";
+//                if(user!=null){
+//                    UID = user.getUid();
+//                }
+//                if(usersList.contains(UID)==false) {
+//                    usersList.add(UID);
+//                }
+//                DatabaseReference ref = database.getReference(); //get db reference
+//                final DatabaseReference usersListRef = ref.child("groups").child(groupId).child("wagers").child(id).child("usersList");
+//                usersListRef.setValue(usersList);
                 Toast.makeText(getApplicationContext(),  "Opening Bet Payment Stuff", Toast.LENGTH_LONG).show();
             }
         });
@@ -111,6 +152,7 @@ public class WagerActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent myIntent = new Intent(WagerActivity.this,  DareActivity.class);
                 Toast.makeText(getApplicationContext(),"Spin for DARE", Toast.LENGTH_LONG).show();
+                myIntent.putExtra("challengeList", challengeList);
                 startActivity(myIntent);
             }
         });

@@ -35,6 +35,9 @@ public class CreateWagerActivity extends AppCompatActivity {
         final TextView uploadTV = findViewById(R.id.uploadTV);
         final EditText heading = findViewById(R.id.heading);
         final EditText description = findViewById(R.id.description);
+//        final EditText groupName = findViewById(R.id.groupName);
+        final EditText betValText = findViewById(R.id.betVal);
+        final EditText potentialChallengeText = findViewById(R.id.potentialChallenge);
         Button exit = findViewById(R.id.exit);
         Button done = findViewById(R.id.done);
         Intent groupInfo = getIntent();
@@ -66,6 +69,11 @@ public class CreateWagerActivity extends AppCompatActivity {
                 String headingText = heading.getText().toString();
                 String descriptionText = description.getText().toString();
                 String groupIdToPass = groupId;
+                String valBet = betValText.getText().toString();
+                if(!valBet.contains("."))
+                    valBet=valBet+".00";
+                double betVal = Double.parseDouble(valBet);
+                String potentialChallenge = potentialChallengeText.getText().toString();
                 Log.d("tag", groupIdToPass);
                 //DatabaseReference ref = database.getReference();
                 //DatabaseReference wagerRef = ref.child("wagers").push();
@@ -85,6 +93,10 @@ public class CreateWagerActivity extends AppCompatActivity {
                 if(headingText.equals("")|| descriptionText.equals("")){
                     Toast.makeText(getApplicationContext(),  "Please enter wager information for all text fields", Toast.LENGTH_SHORT).show();
                 }
+
+                else if (potentialChallenge.equals(""))
+                    Toast.makeText(getApplicationContext(),  "Please enter one potential challenge", Toast.LENGTH_SHORT).show();
+
                 else {
                     if(selectedImageUri==null || selectedImageUri.toString().equals("")){
                         uriStr = ""; //Toast.makeText(getApplicationContext(),  "add pic", Toast.LENGTH_SHORT).show();
@@ -93,11 +105,12 @@ public class CreateWagerActivity extends AppCompatActivity {
                         uriStr = selectedImageUri.toString();
                     }
                     Toast.makeText(getApplicationContext(),  "Done!", Toast.LENGTH_SHORT).show();
-
                     intent.putExtra("pic", uriStr);
                     intent.putExtra("headingText", headingText);
                     intent.putExtra("descriptionText", descriptionText);
                     intent.putExtra("groupIdToPass", groupIdToPass);
+                    intent.putExtra("betVal", betVal);
+                    intent.putExtra("potentialChallenge", potentialChallenge);
                     setResult(RESULT_OK, intent);
                     finish();
                 }

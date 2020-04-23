@@ -11,10 +11,14 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Random;
 
 public class DareActivity extends AppCompatActivity implements Animation.AnimationListener {
@@ -25,6 +29,8 @@ public class DareActivity extends AppCompatActivity implements Animation.Animati
     SharedPreferences sharedPreferences;
     Button b_start;
     ImageView selected, imageRoulette;
+    TextView red, orange, purple, blue, green, yellow;
+    RelativeLayout tvLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +38,30 @@ public class DareActivity extends AppCompatActivity implements Animation.Animati
         requestWindowFeature(1);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dare);
+        Bundle extras = getIntent().getExtras();
+        ArrayList<String> challengeList = extras.getStringArrayList("challengeList");
+        int size = challengeList.size(), challenge_id;
+        String[] challenges = {"one", "two", "three", "four", "five", "six"};
+        for (int i = 0; i <6; i++){
+            challenge_id = new Random().nextInt(challengeList.size());
+            challenges[i]=challengeList.get(challenge_id);
+        }
+        red = findViewById(R.id.red);
+        purple = findViewById(R.id.purple);
+        orange = findViewById(R.id.orange);
+        blue = findViewById(R.id.blue);
+        yellow = findViewById(R.id.yellow);
+        green = findViewById(R.id.green);
+
+        red.setText(challenges[0]);
+        purple.setText(challenges[1]);
+        green.setText(challenges[2]);
+        blue.setText(challenges[3]);
+        orange.setText(challenges[4]);
+        yellow.setText(challenges[5]);
+
+        tvLayout = findViewById(R.id.tvLayout);
+
         b_start = findViewById(R.id.buttonStart);
         selected = findViewById(R.id.imageSelected);
         imageRoulette = findViewById(R.id.rouletteImage);
@@ -74,8 +104,12 @@ public class DareActivity extends AppCompatActivity implements Animation.Animati
             rotateAnimation.setFillAfter(true);
             rotateAnimation.setInterpolator(new DecelerateInterpolator());
             rotateAnimation.setAnimationListener(this);
+
             imageRoulette.setAnimation(rotateAnimation);
+            tvLayout.setAnimation(rotateAnimation);
+
             imageRoulette.startAnimation(rotateAnimation);
+            tvLayout.startAnimation(rotateAnimation);
 
         }
 

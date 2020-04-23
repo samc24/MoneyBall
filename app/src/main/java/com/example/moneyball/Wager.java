@@ -7,9 +7,11 @@ import java.util.ArrayList;
 
 public class Wager {
     String id, heading, description, pictureUri, group, wagerCreator;
-    ArrayList<String> usersList;
+    ArrayList<String> usersList, challengeList;
     Boolean openStatus;
-    public Wager(String id, String heading, String group, String pictureUri, String description, String wagerCreator, ArrayList<String> usersList, Boolean openStatus){
+    double betVal;
+
+    public Wager(String id, String heading, String group, String pictureUri, String description, String wagerCreator, ArrayList<String> usersList, Boolean openStatus, double betVal, ArrayList <String> challengeList){
         this.id = id;
         this.heading = heading;
         this.group = group;
@@ -18,6 +20,8 @@ public class Wager {
         this.wagerCreator = wagerCreator;
         this.usersList = usersList;
         this.openStatus = openStatus;
+        this.betVal = betVal;
+        this.challengeList = challengeList;
     }
 
     //A function to add a user to the list of users who have entered a wager
@@ -87,5 +91,21 @@ public class Wager {
 
     public void setOpenStatus(Boolean openStatus) {
         this.openStatus = openStatus;
+    }
+
+    public double getBetVal() {
+        return betVal;
+    }
+
+    public void setBetVal(double betVal) {
+        this.betVal = betVal;
+    }
+
+    public ArrayList<String> getChallengeList() {
+        return challengeList;
+    }
+
+    public void setChallengeList(ArrayList<String> challengeList) {
+        this.challengeList = challengeList;
     }
 }

@@ -53,7 +53,8 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
     Uri groupPicUri;
     ImageView groupPic;
     String groupIdToPass;
-    public static final int ADD_WAGER_REQUEST = 1;
+    double betVal;
+    public static final int ADD_WAGER_REQUEST = 1, JOIN_WAGER = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,10 +108,13 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
                         String wagerCreator = wagerData.get("wagerCreator").toString();
                         ArrayList<String> usersList = (ArrayList<String>)wagerData.get("usersList");
                         Boolean openStatus = (Boolean)wagerData.get("openStatus");
+                        double betVal = (double) wagerData.get("betVal");
+                        ArrayList<String> challengeList = (ArrayList<String>)wagerData.get("challengeList");
 
+                        Log.d("BET", "onDataChange: " + betVal);
                         Log.d("KOBE", pic);
 
-                        Wager newWager = new Wager(key, heading, groupName, pic, description, wagerCreator, usersList, openStatus);  //create the new wager using the data from above
+                        Wager newWager = new Wager(key, heading, groupName, pic, description, wagerCreator, usersList, openStatus, betVal, challengeList);  //create the new wager using the data from above
                         wagers.add(newWager); //add this wager to a list of wagers
                         wagerAdapter.notifyDataSetChanged();
                     }
@@ -175,6 +179,8 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
         String pic = ((WagerAdapter) wagerAdapter).getItem(position).getPicture();
         String id = ((WagerAdapter) wagerAdapter).getItem(position).getId();
         String wagerCreator = ((WagerAdapter) wagerAdapter).getItem(position).getWagerCreator();
+        double betVal = ((WagerAdapter) wagerAdapter).getItem(position).getBetVal();
+        ArrayList<String> challengeList = ((WagerAdapter) wagerAdapter).getItem(position).getChallengeList();
 
         Intent openWager = new Intent(getApplicationContext(), WagerActivity.class); //create the intent
         //pass data to intent
@@ -189,7 +195,11 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
         openWager.putExtra("id", id); // change 0L to id
         openWager.putExtra("pic", pic);//THIS IS THE WAGER PICTURE
         openWager.putExtra("groupPic", groupPicUri.toString());
-        startActivity(openWager);
+        openWager.putExtra("betVal", betVal);
+        openWager.putExtra("challengeList", challengeList);
+        openWager.putExtra("position", position);
+        Log.d("BET", "onItemClick: " + betVal);
+        startActivityForResult(openWager, JOIN_WAGER);
 
     }
 
@@ -201,6 +211,9 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
                 final String heading = data.getStringExtra("headingText");
                 final String description = data.getStringExtra("descriptionText");
                 final String group = data.getStringExtra("groupIdToPass");
+                final double betVal = data.getDoubleExtra("betVal", 1.0D);
+                final String potentialChallenge = data.getStringExtra("potentialChallenge");
+                Log.d("BET", "onActivityRes: " + betVal);
 
                 final DatabaseReference ref = database.getReference();    //Get database reference
                 final DatabaseReference wagerRef = ref.child("groups").child(group).child("wagers").push();//Find specific spot in database to place data (push creates unique key)
@@ -226,7 +239,9 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
                                    }
                                    ArrayList<String> usersList = new ArrayList<String>(); //new list of users that have entered the wager
                                    usersList.add(UID); //auto add the creator of the wager
-                                   Wager newWager = new Wager(key, heading, group, imageReference, description, UID, usersList, true); //create wager
+                                   ArrayList<String> challengeList = new ArrayList<>();
+                                   challengeList.add(potentialChallenge);
+                                   Wager newWager = new Wager(key, heading, group, imageReference, description, UID, usersList, true, betVal, challengeList); //create wager
                                        wagerRef.setValue(newWager); //set the value in the database to be that of the wager
 
                                }
@@ -242,13 +257,26 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
                     }
                     ArrayList<String> usersList = new ArrayList<String>(); //new list of users that have entered the wager
                     usersList.add(UID); //auto add the creator of the wager
-                   final Wager newWager = new Wager(key, heading, group, "", description, UID, usersList, true); //create wager
+                    ArrayList<String> challengeList = new ArrayList<>();
+                    challengeList.add(potentialChallenge);
+                   final Wager newWager = new Wager(key, heading, group, "", description, UID, usersList, true, betVal,challengeList); //create wager
                    wagerRef.setValue(newWager); //set the value in the database to be that of the wager
                 }
             }
             else if (resultCode == RESULT_CANCELED){
                 Toast.makeText(getApplicationContext(),  "New Wager Canceled", Toast.LENGTH_SHORT).show();
             }
+        }
+
+        else if (requestCode == JOIN_WAGER){
+            if(resultCode == RESULT_OK){
+                String potentialChallenge = data.getStringExtra("potentialChallenge");
+                int position = data.getIntExtra("position", 0);
+                ArrayList<String> challengeList = ((WagerAdapter) wagerAdapter).getItem(position).getChallengeList();
+                challengeList.add(potentialChallenge);
+                ((WagerAdapter) wagerAdapter).getItem(position).setChallengeList(challengeList);
+            }
+
         }
     }
 }
