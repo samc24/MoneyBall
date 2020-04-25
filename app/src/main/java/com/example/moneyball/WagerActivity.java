@@ -13,10 +13,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.StorageMetadata;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -26,25 +31,38 @@ import static android.view.View.VISIBLE;
 
 public class WagerActivity extends AppCompatActivity {
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    final int JOIN_WAGER_REQUEST = 123;
+    final int JOINED_WAGER = 321;
+    String descriptionToPass;
+    String headingToPass;
+    ArrayList<String> votesListToPass;
+    String groupID, wagerID;
+    ArrayList<String> usersList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wager);
         Bundle extras = getIntent().getExtras();
-        String description = extras.getString("description");
+        final String description = extras.getString("description");
         String groupDesc = extras.getString("groupDescription");
-        String heading = extras.getString("heading");
+        final String heading = extras.getString("heading");
         String group = extras.getString("group");
         String wagerCreator = extras.getString("wagerCreator");
         final String id = extras.getString("id");
         final String groupId = extras.getString("groupId");
-        final ArrayList<String> usersList = extras.getStringArrayList("usersList");
+        groupID = groupId;
+        wagerID = id;
+        usersList = extras.getStringArrayList("usersList");
+        final ArrayList<String> votesList = extras.getStringArrayList("votesList");
+        Log.d("tag", votesList.toString());
         double betVal = extras.getDouble("betVal");
         final ArrayList<String> challengeList = extras.getStringArrayList("challengeList");
         Log.d("BET", "wager onCreate: " + betVal);
         final EditText potentialChallengeText = findViewById(R.id.potentialChallenge);
         final int position = extras.getInt("position");
-
+        descriptionToPass = description;
+        headingToPass = heading;
+        votesListToPass = votesList;
         //setting the group picture holder
         Uri groupPicUri = Uri.parse(extras.getString("groupPic"));
         ImageView groupPicHolder = findViewById(R.id.groupPic);
@@ -111,13 +129,8 @@ public class WagerActivity extends AppCompatActivity {
                     if(user!=null){
                         UID = user.getUid();
                     }
-                    if(usersList.contains(UID)==false) {
-                        usersList.add(UID);
-                    }
-                    DatabaseReference ref = database.getReference(); //get db reference
-                    final DatabaseReference usersListRef = ref.child("groups").child(groupId).child("wagers").child(id).child("usersList");
-                    usersListRef.setValue(usersList);
-                    Intent intent = new Intent();
+                    DatabaseReference ref = database.getReference();
+                    Intent intent = new Intent(getApplicationContext(), JoinWagerActivity.class);
                     String potentialChallenge = potentialChallengeText.getText().toString();
                     if(potentialChallenge.equals(""))
                         Toast.makeText(getApplicationContext(),  "Enter one potential challenge!", Toast.LENGTH_SHORT).show();
@@ -128,6 +141,16 @@ public class WagerActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "Joined Wager", Toast.LENGTH_SHORT).show();
                         btn_closeWager.setVisibility(View.GONE);
                         potentialChallengeText.setVisibility(View.GONE);
+                        Log.d("tag", votesListToPass.toString());
+                        Log.d("tag", descriptionToPass);
+                        Log.d("tag", headingToPass);
+                        intent.putExtra("description", descriptionToPass);
+                        intent.putExtra("heading", headingToPass);
+                        intent.putExtra("userID", UID);
+                        intent.putExtra("groupID", groupId);
+                        intent.putExtra("wagerID", id);
+                        intent.putExtra("votesList", votesListToPass);
+                        startActivityForResult(intent, JOIN_WAGER_REQUEST);
                     }
                 }
             }
@@ -174,5 +197,30 @@ public class WagerActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),  "Invite your friends!", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, final Intent data) {
+        if (requestCode == JOIN_WAGER_REQUEST){
+            if(resultCode == RESULT_OK){
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                String UID = "";
+                if(user!=null){
+                    UID = user.getUid();
+                }
+                if(usersList.contains(UID)==false) {
+                    usersList.add(UID);
+                }
+                DatabaseReference ref = database.getReference(); //get db reference
+                final DatabaseReference usersListRef = ref.child("groups").child(groupID).child("wagers").child(wagerID).child("usersList");
+                usersListRef.setValue(usersList);
+
+                //Intent voteData = getIntent();
+                String vote = data.getStringExtra("vote");
+                final DatabaseReference wagerVoteRef = ref.child("groups").child(groupID).child("wagers").child(wagerID).child("userVotes");
+                votesListToPass.add(vote);
+                wagerVoteRef.setValue(votesListToPass);
+            }
+
+        }
     }
 }

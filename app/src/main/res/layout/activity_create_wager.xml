@@ -92,18 +92,30 @@
         android:text="@string/exit"
         android:textColor="@color/colorBlack"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/done"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.506"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/done"
+        android:id="@+id/btnYesCreate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="160dp"
-        android:layout_marginBottom="68dp"
+        android:layout_marginEnd="284dp"
+        android:layout_marginBottom="132dp"
         android:backgroundTint="@color/colorGreenLight"
-        android:text="@string/done"
+        android:text="YES"
+        android:textColor="@color/colorBlack"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/btnNoCreate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="172dp"
+        android:layout_marginBottom="132dp"
+        android:backgroundTint="@color/colorGreenLight"
+        android:text="NO"
         android:textColor="@color/colorBlack"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -134,4 +146,14 @@
         app:layout_constraintHorizontal_bias="0.857"
         app:layout_constraintStart_toEndOf="@+id/groupPicHolder"
         app:layout_constraintTop_toBottomOf="@+id/betVal" />
+
+    <TextView
+        android:id="@+id/tvVoteInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="16dp"
+        android:text="Vote Yes or No to Finish"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/description" />
 </androidx.constraintlayout.widget.ConstraintLayout>

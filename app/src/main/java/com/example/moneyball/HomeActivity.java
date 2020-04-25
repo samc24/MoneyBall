@@ -63,7 +63,7 @@ public class HomeActivity extends AppCompatActivity implements WagerAdapter.Item
                     String wagerCreator = wagerData.get("wagerCreator").toString();
                     ArrayList<String> usersList = (ArrayList<String>)wagerData.get("usersList");
                     Boolean openStatus = (Boolean)wagerData.get("openStatus");
-                    Wager newWager = new Wager(key, heading, groupName, picture, description, wagerCreator, usersList, openStatus, 1.0, new ArrayList<String>());
+                    Wager newWager = new Wager(key, heading, groupName, picture, description, wagerCreator, usersList, openStatus, 1.0, new ArrayList<String>(), new ArrayList<String>());
                     wagers.add(newWager);
                     wagerAdapter.notifyDataSetChanged();
                 }
@@ -140,7 +140,7 @@ public class HomeActivity extends AppCompatActivity implements WagerAdapter.Item
                 }
                 ArrayList<String> usersList = new ArrayList<String>(); //new list of users that have entered the wager
                 usersList.add(UID); //auto add the creator of the wager
-                final Wager newWager = new Wager(key, heading, group, imageUri, description, UID, usersList, true, 1.0, new ArrayList<String>()); //create wager // TODO: add functionality in Wager class for when a uri (imageUri) is passed to be used as prof pic instead of drawable
+                final Wager newWager = new Wager(key, heading, group, imageUri, description, UID, usersList, true, 1.0, new ArrayList<String>(), new ArrayList<String>()); //create wager // TODO: add functionality in Wager class for when a uri (imageUri) is passed to be used as prof pic instead of drawable
                 wagerRef.setValue(newWager);
                 //wagers.add(newWager);
                 //wagerAdapter.notifyDataSetChanged();

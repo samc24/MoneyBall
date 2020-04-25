@@ -110,11 +110,12 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
                         Boolean openStatus = (Boolean)wagerData.get("openStatus");
                         double betVal = Double.parseDouble(wagerData.get("betVal")+"");
                         ArrayList<String> challengeList = (ArrayList<String>)wagerData.get("challengeList");
+                        ArrayList<String> votesList = (ArrayList<String>)wagerData.get("userVotes");
 
                         Log.d("BET", "onDataChange: " + betVal);
                         Log.d("KOBE", pic);
 
-                        Wager newWager = new Wager(key, heading, groupName, pic, description, wagerCreator, usersList, openStatus, betVal, challengeList);  //create the new wager using the data from above
+                        Wager newWager = new Wager(key, heading, groupName, pic, description, wagerCreator, usersList, openStatus, betVal, challengeList, votesList);  //create the new wager using the data from above
                         wagers.add(newWager); //add this wager to a list of wagers
                         wagerAdapter.notifyDataSetChanged();
                     }
@@ -179,6 +180,8 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
         String pic = ((WagerAdapter) wagerAdapter).getItem(position).getPicture();
         String id = ((WagerAdapter) wagerAdapter).getItem(position).getId();
         String wagerCreator = ((WagerAdapter) wagerAdapter).getItem(position).getWagerCreator();
+        ArrayList<String> votesList = ((WagerAdapter) wagerAdapter).getItem(position).getUserVotes();
+        Log.d("tag", votesList.toString());
         double betVal = ((WagerAdapter) wagerAdapter).getItem(position).getBetVal();
         ArrayList<String> challengeList = ((WagerAdapter) wagerAdapter).getItem(position).getChallengeList();
         Log.d("CHL", "itemClick:" + challengeList.toString());
@@ -187,6 +190,7 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
         //pass data to intent
 
         openWager.putExtra("usersList", usersList);
+        openWager.putExtra("votesList", votesList);
         openWager.putExtra("description", description);
         openWager.putExtra("heading", heading);
         openWager.putExtra("wagerCreator", wagerCreator);
@@ -212,6 +216,7 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
                 final String heading = data.getStringExtra("headingText");
                 final String description = data.getStringExtra("descriptionText");
                 final String group = data.getStringExtra("groupIdToPass");
+                final String voteVal = data.getStringExtra("voteVal");
                 betVal = (double) data.getDoubleExtra("betVal", 1.0D);
                 final String potentialChallenge = data.getStringExtra("potentialChallenge");
                 Log.d("BET", "onActivityRes: " + betVal);
@@ -239,10 +244,12 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
                                        UID = user.getUid();
                                    }
                                    ArrayList<String> usersList = new ArrayList<String>(); //new list of users that have entered the wager
+                                   ArrayList<String> votesList = new ArrayList<String>();
+                                   votesList.add(voteVal);
                                    usersList.add(UID); //auto add the creator of the wager
                                    ArrayList<String> challengeList = new ArrayList<>();
                                    challengeList.add(potentialChallenge);
-                                   Wager newWager = new Wager(key, heading, group, imageReference, description, UID, usersList, true, betVal, challengeList); //create wager
+                                   Wager newWager = new Wager(key, heading, group, imageReference, description, UID, usersList, true, betVal, challengeList, votesList); //create wager
                                        wagerRef.setValue(newWager); //set the value in the database to be that of the wager
 
                                }
@@ -258,9 +265,11 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
                     }
                     ArrayList<String> usersList = new ArrayList<String>(); //new list of users that have entered the wager
                     usersList.add(UID); //auto add the creator of the wager
+                    ArrayList<String> votesList = new ArrayList<String>();
+                    votesList.add(voteVal);
                     ArrayList<String> challengeList = new ArrayList<>();
                     challengeList.add(potentialChallenge);
-                   final Wager newWager = new Wager(key, heading, group, "", description, UID, usersList, true, betVal,challengeList); //create wager
+                   final Wager newWager = new Wager(key, heading, group, "", description, UID, usersList, true, betVal,challengeList, votesList); //create wager
                    wagerRef.setValue(newWager); //set the value in the database to be that of the wager
                 }
             }
