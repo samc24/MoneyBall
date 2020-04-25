@@ -1,5 +1,6 @@
 package com.example.moneyball;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -17,14 +18,18 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
@@ -32,6 +37,7 @@ import static android.view.View.VISIBLE;
 public class WagerActivity extends AppCompatActivity {
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
     final int JOIN_WAGER_REQUEST = 123;
+    final int CLOSE_WAGER_REQUEST = 1000;
     final int JOINED_WAGER = 321;
     String descriptionToPass;
     String headingToPass;
@@ -47,7 +53,7 @@ public class WagerActivity extends AppCompatActivity {
         String groupDesc = extras.getString("groupDescription");
         final String heading = extras.getString("heading");
         String group = extras.getString("group");
-        String wagerCreator = extras.getString("wagerCreator");
+        final String wagerCreator = extras.getString("wagerCreator");
         final String id = extras.getString("id");
         final String groupId = extras.getString("groupId");
         groupID = groupId;
@@ -85,12 +91,81 @@ public class WagerActivity extends AppCompatActivity {
         betValTV = findViewById(R.id.betValTV);
         betValTV.setText("Value: $"+betVal);
 
+        final TextView userResult, winners, losers;
+        userResult = findViewById(R.id.userResult);
+        winners = findViewById(R.id.winners);
+        losers = findViewById(R.id.losers);
 
         final Button bet, challenge, invite, btn_closeWager;
         bet = findViewById(R.id.bet);
         challenge = findViewById(R.id.challenge);
         invite = findViewById(R.id.invite);
         btn_closeWager = findViewById(R.id.btn_closeWager);
+
+        DatabaseReference ref = database.getReference(); //get db reference
+        final DatabaseReference openStatusRef = ref.child("groups").child(groupId).child("wagers");//.child(id);//.child("openStatus");
+        openStatusRef.addValueEventListener(new ValueEventListener() {
+            //read the wager data from the database
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                HashMap<String, Object> dataMap = (HashMap<String, Object>) dataSnapshot.getValue(); //get the database data as a hashmap
+                if(dataMap!=null) { //check if its null to avoid errors
+                    for (String key : dataMap.keySet()) {   //loop through the wagers
+                        Object data = dataMap.get(key);
+                        HashMap<String, Object> wagerData = (HashMap<String, Object>) data;
+                        String wagerId = wagerData.get("id").toString();
+                        if(!wagerId.equalsIgnoreCase(id))
+                            continue;
+
+                        Boolean openStatus = (Boolean)wagerData.get("openStatus");
+                        if(!openStatus){
+                            btn_closeWager.setVisibility(View.GONE);
+                            invite.setVisibility(View.GONE);
+                            userResult.setVisibility(VISIBLE);
+                            winners.setVisibility(VISIBLE);
+                            losers.setVisibility(VISIBLE);
+                            ArrayList<String> votesList = (ArrayList<String>)wagerData.get("userVotes");
+                            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                            String UID = "";
+                            if(user!=null){
+                                UID = user.getUid();
+                            }
+                            ArrayList<String> usersList = (ArrayList<String>)wagerData.get("usersList");
+                            String userVote = votesList.get(usersList.indexOf(UID));
+                            String wagerResult = wagerData.get("wagerResult").toString();
+                            ArrayList<String> winnerList = new ArrayList<>(), loserList = new ArrayList<>();
+                            for(int i =0; i <votesList.size(); i++){
+                                String res = votesList.get(i);
+                                if(res.equalsIgnoreCase(wagerResult)){
+                                    winnerList.add(usersList.get(i));
+                                }
+                                else
+                                    loserList.add(usersList.get(i));
+                            }
+                            String winnersString = "Winners: "+winnerList.toString(), losersString = "Losers: "+loserList.toString();; // TODO: needs to be replaced with usernames
+                            winners.setText(winnersString);
+                            losers.setText(losersString);
+                            String userResultString;
+                            if(userVote.equalsIgnoreCase(wagerResult)){
+                                userResultString = "You Win!";
+                                userResult.setText(userResultString);
+                            }
+                            else{
+                                userResultString = "You Lose...";
+                                userResult.setText(userResultString);
+                            }
+                        }
+//                        Toast.makeText(getApplicationContext(), openStatus+", id: "+id, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+
+
 
 
 //        btn_closeWager.setVisibility(INVISIBLE);
@@ -121,7 +196,13 @@ public class WagerActivity extends AppCompatActivity {
                     final DatabaseReference openStatusRef = ref.child("groups").child(groupId).child("wagers").child(id).child("openStatus");
                     openStatusRef.setValue(false);
                     Toast.makeText(getApplicationContext(), "Wager Closed", Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(getApplicationContext(), CloseWagerActivity.class);
+                    intent.putExtra("heading", headingToPass);
+                    intent.putExtra("description", descriptionToPass);
+                    intent.putExtra("groupId", groupId);
+                    intent.putExtra("id", id);
                     btn_closeWager.setVisibility(View.GONE);
+                    startActivityForResult(intent, CLOSE_WAGER_REQUEST);
                 }
                 else{
                     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -160,17 +241,7 @@ public class WagerActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // TODO: Izzy link ur payment stuff here
-//                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-//                String UID = "";
-//                if(user!=null){
-//                    UID = user.getUid();
-//                }
-//                if(usersList.contains(UID)==false) {
-//                    usersList.add(UID);
-//                }
-//                DatabaseReference ref = database.getReference(); //get db reference
-//                final DatabaseReference usersListRef = ref.child("groups").child(groupId).child("wagers").child(id).child("usersList");
-//                usersListRef.setValue(usersList);
+
                 Toast.makeText(getApplicationContext(),  "Opening Bet Payment Stuff", Toast.LENGTH_LONG).show();
             }
         });
@@ -220,7 +291,11 @@ public class WagerActivity extends AppCompatActivity {
                 votesListToPass.add(vote);
                 wagerVoteRef.setValue(votesListToPass);
             }
+        }
+        else if (requestCode == CLOSE_WAGER_REQUEST){
+            if(resultCode == RESULT_OK){
 
+            }
         }
     }
 }
