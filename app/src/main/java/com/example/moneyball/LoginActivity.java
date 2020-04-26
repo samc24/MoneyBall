@@ -25,7 +25,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class LoginActivity extends AppCompatActivity {
     private static final int FROM_LOGIN = 2;
-    private EditText emailTV, passwordTV;
+    private EditText emailTV, passwordTV, usernameTV;
     private Button loginBtn, registerBtn;
     private ProgressBar progressBar;
 
