@@ -11,7 +11,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".CloseWagerActivity"></activity>
+        <activity android:name=".GroupChatActivity"></activity>
+        <activity android:name=".CloseWagerActivity" />
         <activity android:name=".MainActivity" />
         <activity android:name=".HomeActivity" />
         <activity android:name=".GroupActivity" />
@@ -20,7 +21,7 @@
         <activity android:name=".CreateGroupActivity" />
         <activity android:name=".WagerActivity" />
         <activity android:name=".JoinWagerActivity" />
-        <activity android:name=".ProfilePreferencesPage"/>
+        <activity android:name=".ProfilePreferencesPage" />
         <activity android:name=".DareActivity" />
         <activity android:name=".LoginActivity">
             <intent-filter>
