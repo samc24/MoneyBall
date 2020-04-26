@@ -7,6 +7,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -270,15 +273,38 @@ public class WagerActivity extends AppCompatActivity {
         });
     }
 
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.simple_test_menu, menu);
+        return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        //respond to menu item selection
+        switch (item.getItemId()) {
+            case R.id.profile:
+                Toast.makeText(getApplicationContext(), "opening profile page!", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, ProfilePreferencesPage.class));
+                return true;
+//            case R.id.someID4:
+//                Toast.makeText(getApplicationContext(), "someID2!", Toast.LENGTH_SHORT).show();
+//                startActivity(new Intent(this, Help.class));
+//                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     public void onActivityResult(int requestCode, int resultCode, final Intent data) {
-        if (requestCode == JOIN_WAGER_REQUEST){
-            if(resultCode == RESULT_OK){
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == JOIN_WAGER_REQUEST) {
+            if (resultCode == RESULT_OK) {
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 String UID = "";
-                if(user!=null){
+                if (user != null) {
                     UID = user.getUid();
                 }
-                if(usersList.contains(UID)==false) {
+                if (usersList.contains(UID) == false) {
                     usersList.add(UID);
                 }
                 DatabaseReference ref = database.getReference(); //get db reference
@@ -291,9 +317,8 @@ public class WagerActivity extends AppCompatActivity {
                 votesListToPass.add(vote);
                 wagerVoteRef.setValue(votesListToPass);
             }
-        }
-        else if (requestCode == CLOSE_WAGER_REQUEST){
-            if(resultCode == RESULT_OK){
+        } else if (requestCode == CLOSE_WAGER_REQUEST) {
+            if (resultCode == RESULT_OK) {
 
             }
         }
