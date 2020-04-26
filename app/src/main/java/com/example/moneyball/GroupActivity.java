@@ -205,8 +205,9 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
     }
 
     public void onActivityResult(int requestCode, int resultCode, final Intent data) {
-        if (requestCode == ADD_WAGER_REQUEST){
-            if(resultCode == RESULT_OK){
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == ADD_WAGER_REQUEST) {
+            if (resultCode == RESULT_OK) {
                 //Get data from create wager activity to be used in adding the wager data to the database
                 String imageUri = data.getStringExtra("pic");
                 final String heading = data.getStringExtra("headingText");
@@ -220,52 +221,50 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
                 final DatabaseReference wagerRef = ref.child("groups").child(group).child("wagers").push();//Find specific spot in database to place data (push creates unique key)
                 final String key = wagerRef.getKey(); //get the key in order to store it in the wager class
 
-                if(!imageUri.equals("")) {//can't be null as no images selected when pressing means empty string
-                   final StorageReference imageStorageReference = storage.getReference().child("images/" + key + ".png");
-                   imageStorageReference.putFile(Uri.parse(imageUri)).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                       @Override
-                       public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                           Toast.makeText(getApplicationContext(), "upload image success!", Toast.LENGTH_SHORT).show();
-                           //get metadata and path from storage
-                           StorageMetadata snapshotMetadata = taskSnapshot.getMetadata();
-                           Task<Uri> downloadUrl = imageStorageReference.getDownloadUrl();
-                           downloadUrl.addOnSuccessListener(new OnSuccessListener<Uri>() {
-                               @Override
-                               public void onSuccess(Uri uri) {
-                                   String imageReference = uri.toString();
-                                   FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                                   String UID = "";
-                                   if(user!=null){
-                                       UID = user.getUid();
-                                   }
-                                   ArrayList<String> usersList = new ArrayList<String>(); //new list of users that have entered the wager
-                                   usersList.add(UID); //auto add the creator of the wager
-                                   ArrayList<String> challengeList = new ArrayList<>();
-                                   challengeList.add(potentialChallenge);
-                                   Wager newWager = new Wager(key, heading, group, imageReference, description, UID, usersList, true, betVal, challengeList); //create wager
-                                       wagerRef.setValue(newWager); //set the value in the database to be that of the wager
+                if (!imageUri.equals("")) {//can't be null as no images selected when pressing means empty string
+                    final StorageReference imageStorageReference = storage.getReference().child("images/" + key + ".png");
+                    imageStorageReference.putFile(Uri.parse(imageUri)).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            Toast.makeText(getApplicationContext(), "upload image success!", Toast.LENGTH_SHORT).show();
+                            //get metadata and path from storage
+                            StorageMetadata snapshotMetadata = taskSnapshot.getMetadata();
+                            Task<Uri> downloadUrl = imageStorageReference.getDownloadUrl();
+                            downloadUrl.addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    String imageReference = uri.toString();
+                                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                                    String UID = "";
+                                    if (user != null) {
+                                        UID = user.getUid();
+                                    }
+                                    ArrayList<String> usersList = new ArrayList<String>(); //new list of users that have entered the wager
+                                    usersList.add(UID); //auto add the creator of the wager
+                                    ArrayList<String> challengeList = new ArrayList<>();
+                                    challengeList.add(potentialChallenge);
+                                    Wager newWager = new Wager(key, heading, group, imageReference, description, UID, usersList, true, betVal, challengeList); //create wager
+                                    wagerRef.setValue(newWager); //set the value in the database to be that of the wager
 
-                               }
-                           });
-                       }
-                   });
-                }
-                else{//this accounts for when the user doesn't select an image for the wager, imageUri will then be empty string.
+                                }
+                            });
+                        }
+                    });
+                } else {//this accounts for when the user doesn't select an image for the wager, imageUri will then be empty string.
                     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                     String UID = "";
-                    if(user!=null){
+                    if (user != null) {
                         UID = user.getUid();
                     }
                     ArrayList<String> usersList = new ArrayList<String>(); //new list of users that have entered the wager
                     usersList.add(UID); //auto add the creator of the wager
                     ArrayList<String> challengeList = new ArrayList<>();
                     challengeList.add(potentialChallenge);
-                   final Wager newWager = new Wager(key, heading, group, "", description, UID, usersList, true, betVal,challengeList); //create wager
-                   wagerRef.setValue(newWager); //set the value in the database to be that of the wager
+                    final Wager newWager = new Wager(key, heading, group, "", description, UID, usersList, true, betVal, challengeList); //create wager
+                    wagerRef.setValue(newWager); //set the value in the database to be that of the wager
                 }
-            }
-            else if (resultCode == RESULT_CANCELED){
-                Toast.makeText(getApplicationContext(),  "New Wager Canceled", Toast.LENGTH_SHORT).show();
+            } else if (resultCode == RESULT_CANCELED) {
+                Toast.makeText(getApplicationContext(), "New Wager Canceled", Toast.LENGTH_SHORT).show();
             }
         }
     }

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/profile"
+        android:title="profile"
+        app:showAsAction="always"></item>
+
+<!--    <item-->
+<!--        android:id="@+id/someID4"-->
+<!--        android:icon="@drawable/money"-->
+<!--        android:title="Beak"-->
+<!--        app:showAsAction="false"></item>-->
+
+<!--    <item-->
+<!--        android:id="@+id/someID5"-->
+<!--        android:title="Beak"-->
+<!--        android:icon="@drawable/money"-->
+<!--        app:showAsAction="false">-->
+<!--    </item>-->
+    </menu>

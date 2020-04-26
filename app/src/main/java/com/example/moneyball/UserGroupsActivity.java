@@ -9,13 +9,15 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -44,7 +46,6 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
     FirebaseStorage storage = FirebaseStorage.getInstance();
     DatabaseReference ref = database.getReference();
-
 
 
     @Override
@@ -126,7 +127,27 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
 
     }
 
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.simple_test_menu, menu);
+        return true;
+    }
 
+    public boolean onOptionsItemSelected(MenuItem item) {
+        //respond to menu item selection
+        switch (item.getItemId()) {
+            case R.id.profile:
+                Toast.makeText(getApplicationContext(), "opening profile page!", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, ProfilePreferencesPage.class));
+                return true;
+//            case R.id.someID4:
+//                Toast.makeText(getApplicationContext(), "someID2!", Toast.LENGTH_SHORT).show();
+//                startActivity(new Intent(this, Help.class));
+//                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
     @Override
     // https://stackoverflow.com/questions/40587168/simple-android-grid-example-using-recyclerview-with-gridlayoutmanager-like-the
@@ -143,8 +164,9 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == ADD_WAGER_REQUEST){
-            if(resultCode == NEW_GROUP){
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == ADD_WAGER_REQUEST) {
+            if (resultCode == NEW_GROUP) {
                 //This is called if a user creates a new group
                 //get data passed from create group activity
                 final String heading = data.getStringExtra("headingText");
@@ -159,7 +181,7 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
                 //get current users ID
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 String UID = "";
-                if(user!=null){
+                if (user != null) {
                     UID = user.getUid();
                 }
 
@@ -186,13 +208,12 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
                             });
                         }
                     });
-                }
-                else {
+                } else {
                     Group newGroup = new Group(key, heading, description, groupCreator, grouppic); //create the group, picUri = "" here
                     groupRef.setValue(newGroup); //set the db value
                 }
             }
-            if(resultCode == ADD_GROUP){
+            if (resultCode == ADD_GROUP) {
                 //This is called if a user adds an existing group
                 //To add the groupID field to a users data in the database
                 String id = data.getStringExtra("id"); //get the group ID
@@ -201,7 +222,7 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
                 //get the ID of the current user
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 String UID = "";
-                if(user!=null){
+                if (user != null) {
                     UID = user.getUid();
                 }
 
@@ -210,7 +231,7 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
             }
 
         }
-        if (requestCode == FROM_LOGIN){
+        if (requestCode == FROM_LOGIN) {
             String UID = data.getStringExtra("UID");
             Log.d("tag", UID);
         }
