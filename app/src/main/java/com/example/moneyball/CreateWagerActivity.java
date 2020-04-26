@@ -1,8 +1,12 @@
 package com.example.moneyball;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -23,7 +27,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 public class CreateWagerActivity extends AppCompatActivity {
-    private final int PICK_IMAGE = 1;
+    private final int PICK_IMAGE = 1, REQUEST_READ_STORAGE = 100;
     ImageButton upload;
     Drawable bg;
     Uri selectedImageUri;
@@ -70,19 +74,29 @@ public class CreateWagerActivity extends AppCompatActivity {
         upload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                uploadTV.setVisibility(View.GONE);
+                if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED) {
+                    // Permission is not granted
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(CreateWagerActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                        Toast.makeText(getApplicationContext(),  "We need permission to upload pictures to associate with your wager", Toast.LENGTH_LONG).show();
+                    } else {
+                        // No explanation needed; request the permission
+                        ActivityCompat.requestPermissions(CreateWagerActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_READ_STORAGE);
+                    }
+                }
+                else {
+                    uploadTV.setVisibility(View.GONE);
 
-                Intent getIntent = new Intent(Intent.ACTION_GET_CONTENT);
-                getIntent.setType("image/*");
+                    Intent getIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                    getIntent.setType("image/*");
 
-                Intent pickIntent = new Intent(Intent.ACTION_PICK);
-                pickIntent.setDataAndType(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+                    Intent pickIntent = new Intent(Intent.ACTION_PICK);
+                    pickIntent.setDataAndType(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
 
-                Intent chooserIntent = Intent.createChooser(getIntent, "Select Image");
-                chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[] {pickIntent});
+                    Intent chooserIntent = Intent.createChooser(getIntent, "Select Image");
+                    chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{pickIntent});
 
-                startActivityForResult(chooserIntent, PICK_IMAGE);
-
+                    startActivityForResult(chooserIntent, PICK_IMAGE);
+                }
             }
         });
 
@@ -189,6 +203,25 @@ public class CreateWagerActivity extends AppCompatActivity {
                 bg = Drawable.createFromStream(inputStream, selectedImageUri.toString());
                 layout.setBackground(bg);
             }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_READ_STORAGE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted
+                    Toast.makeText(getApplicationContext(),  "Thanks! Please click again", Toast.LENGTH_LONG).show();
+                } else {
+                    // permission denied
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other permissions this app might request.
         }
     }
 }
