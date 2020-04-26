@@ -20,7 +20,11 @@
         <activity android:name=".CreateGroupActivity" />
         <activity android:name=".WagerActivity" />
         <activity android:name=".JoinWagerActivity" />
-        <activity android:name=".ProfilePreferencesPage"/>
+        <activity android:name=".ProfilePreferencesPage">
+            <intent-filter>
+            <category android:name="android.intent.category.NOTIFICATION_PREFERENCES" />
+            </intent-filter>
+        </activity>
         <activity android:name=".DareActivity" />
         <activity android:name=".LoginActivity">
             <intent-filter>

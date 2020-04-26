@@ -5,7 +5,7 @@
     <item
         android:id="@+id/profile"
         android:title="profile"
-        android:icon="profile"
+        android:icon="@drawable/human_dude"
         app:showAsAction="always"></item>
 
 <!--    <item-->
