@@ -106,15 +106,21 @@ public class WagerActivity extends AppCompatActivity {
         btn_closeWager = findViewById(R.id.btn_closeWager);
 
         DatabaseReference ref = database.getReference(); //get db reference
-        final DatabaseReference openStatusRef = ref.child("groups").child(groupId).child("wagers");//.child(id);//.child("openStatus");
+        final DatabaseReference openStatusRef = ref;//.child(id);//.child("openStatus");
         openStatusRef.addValueEventListener(new ValueEventListener() {
             //read the wager data from the database
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
                 HashMap<String, Object> dataMap = (HashMap<String, Object>) dataSnapshot.getValue(); //get the database data as a hashmap
+                HashMap<String, Object> groupsData = (HashMap<String, Object>) dataMap.get("groups");
+                HashMap<String, Object> groupData = (HashMap<String, Object>) groupsData.get(groupId);
+                HashMap<String, Object> wagersData = (HashMap<String, Object>) groupData.get("wagers");
+                HashMap<String, Object> usersData = (HashMap<String, Object>) dataMap.get("users");
+                Log.d("db", dataMap.toString());
                 if(dataMap!=null) { //check if its null to avoid errors
-                    for (String key : dataMap.keySet()) {   //loop through the wagers
-                        Object data = dataMap.get(key);
+                    for (String key : wagersData.keySet()) {   //loop through the wagers
+                        Object data = wagersData.get(key);
                         HashMap<String, Object> wagerData = (HashMap<String, Object>) data;
                         String wagerId = wagerData.get("id").toString();
                         if(!wagerId.equalsIgnoreCase(id))
@@ -139,12 +145,16 @@ public class WagerActivity extends AppCompatActivity {
                             ArrayList<String> winnerList = new ArrayList<>(), loserList = new ArrayList<>();
                             for(int i =0; i <votesList.size(); i++){
                                 String res = votesList.get(i);
+                                HashMap<String, Object> userData = (HashMap<String, Object>)usersData.get(usersList.get(i));
+                                HashMap<String, Object> profData = (HashMap<String, Object>)userData.get("profile");
+                                String username = (String)profData.get("username");
                                 if(res.equalsIgnoreCase(wagerResult)){
-                                    winnerList.add(usersList.get(i));
+                                    winnerList.add(username);
                                 }
                                 else
-                                    loserList.add(usersList.get(i));
+                                    loserList.add(username);
                             }
+
                             String winnersString = "Winners: "+winnerList.toString(), losersString = "Losers: "+loserList.toString();; // TODO: needs to be replaced with usernames
                             winners.setText(winnersString);
                             losers.setText(losersString);

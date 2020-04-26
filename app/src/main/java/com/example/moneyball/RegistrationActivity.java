@@ -25,7 +25,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class RegistrationActivity extends AppCompatActivity {
 
-    private EditText emailTV, passwordTV;
+    private EditText emailTV, passwordTV, usernameTV;
     private Button regBtn;
     private ProgressBar progressBar;
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -51,9 +51,10 @@ public class RegistrationActivity extends AppCompatActivity {
     private void registerNewUser() {
         progressBar.setVisibility(View.VISIBLE);
 
-        final String email, password;
+        final String email, password, username;
         email = emailTV.getText().toString();
         password = passwordTV.getText().toString();
+        username = usernameTV.getText().toString();
 
         if (TextUtils.isEmpty(email)) {
             Toast.makeText(getApplicationContext(), "Please enter email...", Toast.LENGTH_LONG).show();
@@ -61,6 +62,10 @@ public class RegistrationActivity extends AppCompatActivity {
         }
         if (TextUtils.isEmpty(password)) {
             Toast.makeText(getApplicationContext(), "Please enter password!", Toast.LENGTH_LONG).show();
+            return;
+        }
+        if (TextUtils.isEmpty(username)) {
+            Toast.makeText(getApplicationContext(), "Please enter a username!", Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -79,6 +84,8 @@ public class RegistrationActivity extends AppCompatActivity {
                                 DatabaseReference usersRef = ref.child("users").child(UID);
 
                                 DatabaseReference emailRef = usersRef.child("userEmail");
+                                DatabaseReference usernameRef = usersRef.child("profile").child("username");
+                                usernameRef.setValue(username);
                                 emailRef.setValue(email);
                             }
                             Intent intent = new Intent(RegistrationActivity.this, LoginActivity.class);
@@ -96,6 +103,7 @@ public class RegistrationActivity extends AppCompatActivity {
     private void initializeUI() {
         emailTV = findViewById(R.id.email);
         passwordTV = findViewById(R.id.password);
+        usernameTV = findViewById(R.id.etUsername);
         regBtn = findViewById(R.id.register);
         progressBar = findViewById(R.id.progressBar);
     }

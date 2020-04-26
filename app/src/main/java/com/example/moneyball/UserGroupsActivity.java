@@ -91,7 +91,8 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
                             String description = groupData.get("description").toString();
                             String groupCreator = groupData.get("groupCreator").toString();
                             String groupPic =  groupData.get("picUri").toString();
-                            Group newGroup = new Group(key, heading, description, groupCreator, groupPic);
+                            String chatKey = groupData.get("chatId").toString();
+                            Group newGroup = new Group(key, heading, description, groupCreator, groupPic, chatKey);
                             groups.add(newGroup);
                             groupAdapter.notifyDataSetChanged();
                         }
@@ -174,6 +175,8 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
                 DatabaseReference ref = database.getReference(); //get db reference
                 final DatabaseReference groupRef = ref.child("groups").push(); //get the path to store the data
                 final String key = groupRef.getKey(); //get the key for storing in a users database
+                final DatabaseReference chatRef = ref.child("chats").push(); //adds chats to the database
+                final String chatKey = chatRef.getKey(); // get chat key to store in group and user database
 
                 //get current users ID
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -199,15 +202,20 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
                                 @Override
                                 public void onSuccess(Uri uri) {
                                     String imageReference = uri.toString();
-                                    Group newGroup = new Group(key, heading, description, groupCreator, imageReference);
+                                    Group newGroup = new Group(key, heading, description, groupCreator, imageReference,chatKey);
                                     groupRef.setValue(newGroup);
+                                    Chat newChat = new Chat(groupRef.getKey()); //create new chat object by passing on new group key
+                                    chatRef.setValue(newChat); //set new chat in database
                                 }
                             });
                         }
                     });
                 } else {
-                    Group newGroup = new Group(key, heading, description, groupCreator, grouppic); //create the group, picUri = "" here
+                    Group newGroup = new Group(key, heading, description, groupCreator, grouppic,chatKey); //create the group, picUri = "" here
                     groupRef.setValue(newGroup); //set the db value
+                    Chat newChat = new Chat(groupRef.getKey()); //create new chat object by passing on new group key
+                    chatRef.setValue(newChat); //set new chat in database
+
                 }
             }
             if (resultCode == ADD_GROUP) {

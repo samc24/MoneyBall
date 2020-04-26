@@ -172,6 +172,20 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
             }
         });
 
+        //opens the group's corresponding chat
+
+        Button groupchat;
+        groupchat = findViewById(R.id.groupchat);
+        groupchat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent toChatPage = new Intent(getApplicationContext(), GroupChatActivity.class);
+                toChatPage.putExtra("groupId",groupIdToPass);
+                startActivity(toChatPage);
+
+            }
+        });
+
 
     }
 

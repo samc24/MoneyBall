@@ -119,7 +119,8 @@ public class DareActivity extends AppCompatActivity implements Animation.Animati
 
 
     public void onButtonClick(View view) {
-        Intent myIntent = new Intent(DareActivity.this,  UploadActivity.class);
+        //Intent myIntent = new Intent(DareActivity.this,  UploadActivity.class);
+        Intent myIntent = getPackageManager().getLaunchIntentForPackage("com.google.ytdl");
         Toast.makeText(getApplicationContext(),"Complete DARE", Toast.LENGTH_LONG).show();
         startActivity(myIntent);
     }

@@ -1,13 +1,14 @@
 package com.example.moneyball;
 
 public class Group {
-    String id, heading, description, groupCreator, picUri;
-    public Group(String id, String heading, String description, String groupCreator, String picUri){
+    String id, heading, description, groupCreator, picUri,chatId;
+    public Group(String id, String heading, String description, String groupCreator, String picUri, String chatId){
         this.id = id;
         this.heading = heading;
         this.description = description;
         this.groupCreator = groupCreator;
         this.picUri = picUri;
+        this.chatId = chatId;
     }
 
     public String getId() {
@@ -48,6 +49,14 @@ public class Group {
 
     public void setPicUri(String picUri) {
         this.picUri = picUri;
+    }
+
+    public String getChatId() {
+        return this.chatId;
+    }
+
+    public void setChatId(String chatId) {
+        this.chatId = chatId;
     }
 }
 
