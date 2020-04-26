@@ -59,9 +59,6 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
         groups = new ArrayList<>();
         usersGroups = new ArrayList<>();
 
-
-
-
         DatabaseReference groupRef = ref;
         groupRef.addValueEventListener(new ValueEventListener() {
             @Override

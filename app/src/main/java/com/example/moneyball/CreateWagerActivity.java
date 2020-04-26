@@ -41,7 +41,8 @@ public class CreateWagerActivity extends AppCompatActivity {
         final EditText betValText = findViewById(R.id.betVal);
         final EditText potentialChallengeText = findViewById(R.id.potentialChallenge);
         Button exit = findViewById(R.id.exit);
-        Button done = findViewById(R.id.done);
+        Button btnYes = findViewById(R.id.btnYesCreate);
+        Button btnNo = findViewById(R.id.btnNoCreate);
         Intent groupInfo = getIntent();
         final String groupId = groupInfo.getStringExtra("groupId");
 
@@ -86,34 +87,17 @@ public class CreateWagerActivity extends AppCompatActivity {
         });
 
         final Intent intent = new Intent();
-        done.setOnClickListener(new View.OnClickListener() {
+        btnYes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String headingText = heading.getText().toString();
                 String descriptionText = description.getText().toString();
                 String groupIdToPass = groupId;
-//                String valBet = betValText.getText().toString();
-//                if(!valBet.contains("."))
-//                    valBet=valBet+".00";
+                String voteVal = "Y";
                 double betVal = Double.parseDouble(valBet);
                 Log.d("BET", "done onClick: "+betVal);
                 String potentialChallenge = potentialChallengeText.getText().toString();
                 Log.d("tag", groupIdToPass);
-                //DatabaseReference ref = database.getReference();
-                //DatabaseReference wagerRef = ref.child("wagers").push();
-                /*
-                groupRef.child("picture").setValue(selectedImageUri.toString());
-                groupRef.child("heading").setValue(headingText);
-                groupRef.child("description").setValue(descriptionText);
-                groupRef.child("groupName").setValue(groupNameText);
-                */
-//                intent.putExtra("pic", selectedImageUri.toString());
-//                intent.putExtra("headingText", headingText);
-//                intent.putExtra("descriptionText", descriptionText);
-//                intent.putExtra("groupNameText", groupIdToPass);
-//                setResult(RESULT_OK, intent);
-//                finish();
-
                 if(headingText.equals("")|| descriptionText.equals("")){
                     Toast.makeText(getApplicationContext(),  "Please enter wager information for all text fields", Toast.LENGTH_SHORT).show();
                 }
@@ -135,6 +119,46 @@ public class CreateWagerActivity extends AppCompatActivity {
                     intent.putExtra("groupIdToPass", groupIdToPass);
                     intent.putExtra("betVal", betVal);
                     intent.putExtra("potentialChallenge", potentialChallenge);
+                    intent.putExtra("voteVal", voteVal);
+                    setResult(RESULT_OK, intent);
+                    finish();
+                }
+            }
+        });
+
+        btnNo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String headingText = heading.getText().toString();
+                String descriptionText = description.getText().toString();
+                String groupIdToPass = groupId;
+                String voteVal = "N";
+                double betVal = Double.parseDouble(valBet);
+                Log.d("BET", "done onClick: "+betVal);
+                String potentialChallenge = potentialChallengeText.getText().toString();
+                Log.d("tag", groupIdToPass);
+                if(headingText.equals("")|| descriptionText.equals("")){
+                    Toast.makeText(getApplicationContext(),  "Please enter wager information for all text fields", Toast.LENGTH_SHORT).show();
+                }
+
+                else if (potentialChallenge.equals(""))
+                    Toast.makeText(getApplicationContext(),  "Please enter one potential challenge", Toast.LENGTH_SHORT).show();
+
+                else {
+                    if(selectedImageUri==null || selectedImageUri.toString().equals("")){
+                        uriStr = ""; //Toast.makeText(getApplicationContext(),  "add pic", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        uriStr = selectedImageUri.toString();
+                    }
+                    Toast.makeText(getApplicationContext(),  "Done!", Toast.LENGTH_SHORT).show();
+                    intent.putExtra("pic", uriStr);
+                    intent.putExtra("headingText", headingText);
+                    intent.putExtra("descriptionText", descriptionText);
+                    intent.putExtra("groupIdToPass", groupIdToPass);
+                    intent.putExtra("betVal", betVal);
+                    intent.putExtra("potentialChallenge", potentialChallenge);
+                    intent.putExtra("voteVal", voteVal);
                     setResult(RESULT_OK, intent);
                     finish();
                 }

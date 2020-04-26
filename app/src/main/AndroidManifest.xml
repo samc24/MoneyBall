@@ -11,15 +11,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity"></activity>
-        <activity android:name=".HomeActivity"></activity>
-        <activity android:name=".GroupActivity"></activity>
-        <activity android:name=".CreateWagerActivity"></activity>
-        <activity android:name=".UserGroupsActivity"></activity>
-        <activity android:name=".CreateGroupActivity"></activity>
-        <activity android:name=".WagerActivity"></activity>
+        <activity android:name=".CloseWagerActivity"></activity>
+        <activity android:name=".MainActivity" />
+        <activity android:name=".HomeActivity" />
+        <activity android:name=".GroupActivity" />
+        <activity android:name=".CreateWagerActivity" />
+        <activity android:name=".UserGroupsActivity" />
+        <activity android:name=".CreateGroupActivity" />
+        <activity android:name=".WagerActivity" />
+        <activity android:name=".JoinWagerActivity" />
         <activity android:name=".ProfilePreferencesPage"/>
-        <activity android:name=".DareActivity"/>
+        <activity android:name=".DareActivity" />
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,9 +29,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".UploadActivity"/>
-        <activity android:name=".PlaylistActivity"/>
+        <activity android:name=".UploadActivity" />
+        <activity android:name=".PlaylistActivity" />
         <activity android:name=".RegistrationActivity" />
         <activity android:name=".DashboardActivity" />
 

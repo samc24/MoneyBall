@@ -6,12 +6,12 @@ import android.net.Uri;
 import java.util.ArrayList;
 
 public class Wager {
-    String id, heading, description, pictureUri, group, wagerCreator;
-    ArrayList<String> usersList, challengeList;
+    String id, heading, description, pictureUri, group, wagerCreator, wagerResult;
+    ArrayList<String> usersList, challengeList, userVotes;
     Boolean openStatus;
     double betVal;
 
-    public Wager(String id, String heading, String group, String pictureUri, String description, String wagerCreator, ArrayList<String> usersList, Boolean openStatus, double betVal, ArrayList <String> challengeList){
+    public Wager(String id, String heading, String group, String pictureUri, String description, String wagerCreator, ArrayList<String> usersList, Boolean openStatus, double betVal, ArrayList <String> challengeList, ArrayList <String> userVotes, String wagerResult){
         this.id = id;
         this.heading = heading;
         this.group = group;
@@ -22,6 +22,8 @@ public class Wager {
         this.openStatus = openStatus;
         this.betVal = betVal;
         this.challengeList = challengeList;
+        this.userVotes = userVotes;
+        this.wagerResult = wagerResult;
     }
 
     //A function to add a user to the list of users who have entered a wager
@@ -107,5 +109,21 @@ public class Wager {
 
     public void setChallengeList(ArrayList<String> challengeList) {
         this.challengeList = challengeList;
+    }
+
+    public void setUserVotes(ArrayList<String> userVotes) {
+        this.userVotes = userVotes;
+    }
+
+    public ArrayList<String> getUserVotes() {
+        return userVotes;
+    }
+
+    public String getWagerResult() {
+        return wagerResult;
+    }
+
+    public void setWagerResult(String wagerResult) {
+        this.wagerResult = wagerResult;
     }
 }
