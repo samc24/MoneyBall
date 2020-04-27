@@ -51,6 +51,7 @@ public class ProfilePreferencesPage extends AppCompatActivity {
     private EditText usernameET;
     private Uri profilePicUri;
     private Button notifyButton;
+    private Button sendNotifyButton;
 
 
     @Override
