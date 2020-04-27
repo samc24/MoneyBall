@@ -138,10 +138,10 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
                 Toast.makeText(getApplicationContext(), "opening profile page!", Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(this, ProfilePreferencesPage.class));
                 return true;
-//            case R.id.someID4:
-//                Toast.makeText(getApplicationContext(), "someID2!", Toast.LENGTH_SHORT).show();
-//                startActivity(new Intent(this, Help.class));
-//                return true;
+            case R.id.stats:
+                Toast.makeText(getApplicationContext(), "opening stats!", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, NbaActivity.class));
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

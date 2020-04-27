@@ -2,6 +2,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto">
 
+
+
+
+    <item
+        android:id="@+id/stats"
+        android:title="stats"
+        android:icon="@mipmap/big_logo"
+        app:showAsAction="always"></item>
+
     <item
         android:id="@+id/profile"
         android:title="profile"
