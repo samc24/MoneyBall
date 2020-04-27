@@ -25,6 +25,7 @@
                 android:textAllCaps="false"
                 android:textSize="20sp"
                 android:textColor="@color/cardview_dark_background"
+                android:fontFamily="sans-serif-condensed-medium"
                 android:layout_margin="2dp"
                 android:layout_marginStart="2dp"
                 android:layout_marginBottom="60dp"
