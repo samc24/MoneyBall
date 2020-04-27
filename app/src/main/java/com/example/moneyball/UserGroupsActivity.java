@@ -139,7 +139,7 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
                 startActivity(new Intent(this, ProfilePreferencesPage.class));
                 return true;
             case R.id.stats:
-                Toast.makeText(getApplicationContext(), "opening stats!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(),  "Getting NBA Statistics! Please wait...", Toast.LENGTH_LONG).show();
                 startActivity(new Intent(this, NbaActivity.class));
                 return true;
             default:
