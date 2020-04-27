@@ -64,7 +64,7 @@ public class WagerActivity extends AppCompatActivity {
         usersList = extras.getStringArrayList("usersList");
         final ArrayList<String> votesList = extras.getStringArrayList("votesList");
         Log.d("tag", votesList.toString());
-        double betVal = extras.getDouble("betVal");
+        final double betVal = extras.getDouble("betVal");
         final ArrayList<String> challengeList = extras.getStringArrayList("challengeList");
         Log.d("BET", "wager onCreate: " + betVal);
         final EditText potentialChallengeText = findViewById(R.id.potentialChallenge);
@@ -82,7 +82,7 @@ public class WagerActivity extends AppCompatActivity {
         ImageView wagerPic = findViewById(R.id.wagerPic);
         Picasso.get().load(picUri).into(wagerPic);//use PICASSSOOOO for loading picture urls into imageView or whatever holders u need.
 
-        TextView groupName, groupDescription, wagerName, wagerDescription, betValTV;
+        final TextView groupName, groupDescription, wagerName, wagerDescription, betValTV, wagerResults;
         groupDescription = findViewById(R.id.groupDescription);
         groupDescription.setText(groupDesc);
         groupName = findViewById(R.id.groupName);
@@ -93,6 +93,8 @@ public class WagerActivity extends AppCompatActivity {
         wagerDescription.setText(description);
         betValTV = findViewById(R.id.betValTV);
         betValTV.setText("Value: $"+betVal);
+        wagerResults = findViewById(R.id.wagerResultsTV);
+        wagerResults.setVisibility(INVISIBLE);
 
         final TextView userResult, winners, losers;
         userResult = findViewById(R.id.userResult);
@@ -101,7 +103,9 @@ public class WagerActivity extends AppCompatActivity {
 
         final Button bet, challenge, invite, btn_closeWager;
         bet = findViewById(R.id.bet);
+        bet.setVisibility(INVISIBLE);
         challenge = findViewById(R.id.challenge);
+        challenge.setVisibility(INVISIBLE);
         invite = findViewById(R.id.invite);
         btn_closeWager = findViewById(R.id.btn_closeWager);
 
@@ -133,6 +137,10 @@ public class WagerActivity extends AppCompatActivity {
                             userResult.setVisibility(VISIBLE);
                             winners.setVisibility(VISIBLE);
                             losers.setVisibility(VISIBLE);
+                            bet.setVisibility(VISIBLE);
+                            challenge.setVisibility(VISIBLE);
+                            potentialChallengeText.setVisibility(INVISIBLE);
+                            wagerResults.setVisibility(VISIBLE);
                             ArrayList<String> votesList = (ArrayList<String>)wagerData.get("userVotes");
                             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                             String UID = "";
@@ -162,10 +170,23 @@ public class WagerActivity extends AppCompatActivity {
                             if(userVote.equalsIgnoreCase(wagerResult)){
                                 userResultString = "You Win!";
                                 userResult.setText(userResultString);
+                                wagerResults.setText("You win! Watch your friends' dare videos or hop in the chat and ask for your payment from these people: " + loserList.toString());
                             }
                             else{
                                 userResultString = "You Lose...";
                                 userResult.setText(userResultString);
+                                wagerResults.setText("You lose! Do a dare or pay $" + betVal/winnerList.size() + " to these people: " + winnerList.toString());
+                            }
+                        } else {
+                            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                            String UID = "";
+                            if(user!=null){
+                                UID = user.getUid();
+                            }
+                            ArrayList<String> usersList = (ArrayList<String>)wagerData.get("usersList");
+                            if(usersList.contains(UID)) {
+                                wagerResults.setVisibility(VISIBLE);
+                                wagerResults.setText("This wager is still open. Wait for the wager creator to close it to find out how you did!");
                             }
                         }
 //                        Toast.makeText(getApplicationContext(), openStatus+", id: "+id, Toast.LENGTH_SHORT).show();
@@ -177,6 +198,7 @@ public class WagerActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
+
 
 
 
