@@ -26,44 +26,45 @@ import java.util.ArrayList;
 
 public class JoinWagerActivity extends AppCompatActivity {
     Button btnYes, btnNo;
-    int WAGER_JOINED = 321;
-    final FirebaseDatabase database = FirebaseDatabase.getInstance();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_join_wager);
+        //initialize UI
         final TextView tvWagerTitle = findViewById(R.id.tvWagerTitle);
         final TextView tvWagerDescription = findViewById(R.id.tvWagerDescription);
-
-        Intent wagerInfo = getIntent();
-        final String wagerTitle = wagerInfo.getStringExtra("heading");
-        final String wagerDescription = wagerInfo.getStringExtra("description");
-        final String userID = wagerInfo.getStringExtra("userID");
-        final String groupId = wagerInfo.getStringExtra("groupID");
-        final String wagerId = wagerInfo.getStringExtra("wagerID");
-        final ArrayList<String> votesList = wagerInfo.getStringArrayListExtra("votesList");
-        tvWagerDescription.setText(wagerDescription);
-        tvWagerTitle.setText(wagerTitle);
         btnYes = findViewById(R.id.btnYes);
         btnNo = findViewById(R.id.btnNo);
 
+        Intent wagerInfo = getIntent(); //get the intent data
+
+        //get the heading and description
+        final String wagerTitle = wagerInfo.getStringExtra("heading");
+        final String wagerDescription = wagerInfo.getStringExtra("description");
+
+        //set the text of the text views
+        tvWagerDescription.setText(wagerDescription);
+        tvWagerTitle.setText(wagerTitle);
+
+        //on click listener to vote yes
         btnYes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent wagerIntent = new Intent(getApplicationContext(), GroupActivity.class);
-                wagerIntent.putExtra("vote", "Y");
-                setResult(RESULT_OK, wagerIntent);
-                finish();
+                Intent wagerIntent = new Intent(getApplicationContext(), GroupActivity.class); //create intent to go back to group activity
+                wagerIntent.putExtra("vote", "Y");  //pass data of the vote
+                setResult(RESULT_OK, wagerIntent); //set the result
+                finish(); //go back to the group activity
             }
         });
 
+        //on click listener to vote no
         btnNo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent wagerIntent = new Intent(getApplicationContext(), GroupActivity.class);
-                wagerIntent.putExtra("vote", "N");
-                setResult(RESULT_OK, wagerIntent);
-                finish();
+                Intent wagerIntent = new Intent(getApplicationContext(), GroupActivity.class);//create intent to go back to group activity
+                wagerIntent.putExtra("vote", "N");//pass data of the vote
+                setResult(RESULT_OK, wagerIntent);//set the result
+                finish();//go back to the group activity
             }
         });
 

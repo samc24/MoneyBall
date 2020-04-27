@@ -18,14 +18,16 @@ public class CloseWagerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_close_wager);
+        //initialize UI
         yes = findViewById(R.id.btnYes);
         no = findViewById(R.id.btnNo);
         heading = findViewById(R.id.tvWagerTitle);
         description = findViewById(R.id.tvWagerDescription);
-        Bundle extras = getIntent().getExtras();
-        heading.setText(extras.getString("heading"));
-        description.setText(extras.getString("description"));
 
+        //get data passed through intent
+        Bundle extras = getIntent().getExtras();
+        heading.setText(extras.getString("heading")); //set text of text views to show the heading and description of the wager
+        description.setText(extras.getString("description"));
         final String id = extras.getString("id");
         final String groupId = extras.getString("groupId");
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -33,21 +35,23 @@ public class CloseWagerActivity extends AppCompatActivity {
         final DatabaseReference wagerResultRef = ref.child("groups").child(groupId).child("wagers").child(id).child("wagerResult");
         wagerResultRef.setValue("");
 
+        //let the wager creator close the wager and set the result as yes or no using these buttons
+
         yes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                wagerResultRef.setValue("Y");
+                wagerResultRef.setValue("Y"); //set the wager result to Y
                 Toast.makeText(getApplicationContext(), "Wager Result is YES", Toast.LENGTH_LONG).show();
-                finish();
+                finish(); //return to group activity
             }
         });
 
         no.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                wagerResultRef.setValue("N");
+                wagerResultRef.setValue("N"); //set the wager result to N
                 Toast.makeText(getApplicationContext(), "Wager Result is NO", Toast.LENGTH_LONG).show();
-                finish();
+                finish(); //return to group activity
             }
         });
     }
