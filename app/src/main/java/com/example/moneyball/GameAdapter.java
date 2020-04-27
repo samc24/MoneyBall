@@ -22,8 +22,7 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.MyViewHolder>{
     private ItemClickListener mClickListener;
 
     // Provide a reference to the views for each data item
-    // Complex data items may need more than one view per item, and
-    // you provide access to all the views for a data item in a view holder
+    // provide access to all the views for a data item in a view holder
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         // each data item is just a string in this case
         public TextView homeTeam, awayTeam;
@@ -39,7 +38,7 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.MyViewHolder>{
         }
     }
 
-    // Provide a suitable constructor (depends on the kind of dataset)
+    // a suitable constructor
     public GameAdapter(ArrayList<Game> myDataset) {
         mDataset = myDataset;
     }
@@ -57,13 +56,13 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.MyViewHolder>{
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        // - get element from your dataset at this position
+        // - get element from dataset at this position
         // - replace the contents of the view with that element
         holder.homeTeam.setText(mDataset.get(position).gethomeTeam());
         holder.awayTeam.setText(mDataset.get(position).getawayTeam());
     }
 
-    // Return the size of your dataset (invoked by the layout manager)
+    // Return the size of dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
         return mDataset.size();
