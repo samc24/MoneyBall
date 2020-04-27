@@ -36,16 +36,15 @@ import java.util.HashMap;
 public class UserGroupsActivity extends AppCompatActivity implements GroupAdapter.ItemClickListener {
     private RecyclerView.Adapter groupAdapter;
     public static final int ADD_WAGER_REQUEST = 1;
-    public static final int FROM_LOGIN = 2;
     private final int NEW_GROUP = 123;
     private final int ADD_GROUP = 321;
-    int id = 1; // just added an ID field, not sure if it'll be used
-    ArrayList<Group> groups;
-    ArrayList<String> usersGroups;
 
-    final FirebaseDatabase database = FirebaseDatabase.getInstance();
-    FirebaseStorage storage = FirebaseStorage.getInstance();
-    DatabaseReference ref = database.getReference();
+    ArrayList<Group> groups;        //an arraylist of group objects to add the user's groups into
+    ArrayList<String> usersGroups;  //an arraylist of strings to hold the group IDs a user is in
+
+    final FirebaseDatabase database = FirebaseDatabase.getInstance();   //get database instance
+    FirebaseStorage storage = FirebaseStorage.getInstance();            //get the firebase storage instance (for images)
+    DatabaseReference ref = database.getReference();                    //get the reference to the database
 
 
     @Override
@@ -59,42 +58,42 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
         groups = new ArrayList<>();
         usersGroups = new ArrayList<>();
 
-        DatabaseReference groupRef = ref;
+        DatabaseReference groupRef = ref;           //set reference to read data
         groupRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                groups.clear();
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                String UID = "";
-                if(user!=null){
+                groups.clear();                     //make sure the groups arraylist is empty so as not to add duplicate data
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser(); //get the current user
+                String UID = "";        //get the user ID
+                if(user!=null){         //avoid errors
                     UID = user.getUid();
                 }
-                HashMap<String, Object> dataMap = (HashMap<String, Object>) dataSnapshot.getValue();
-                HashMap<String, Object> objData = (HashMap<String, Object>) dataMap.get("groups");
-                HashMap<String, Object> userData = (HashMap<String, Object>) dataMap.get("users");
-                HashMap<String, Object> userSpecificData = (HashMap<String, Object>) userData.get(UID);
-                HashMap<String, Object> userGroupData = (HashMap<String, Object>) userSpecificData.get("groups");
+                HashMap<String, Object> dataMap = (HashMap<String, Object>) dataSnapshot.getValue();    //get hashmap of data
+                HashMap<String, Object> objData = (HashMap<String, Object>) dataMap.get("groups");      //get group data
+                HashMap<String, Object> userData = (HashMap<String, Object>) dataMap.get("users");      //get user data
+                HashMap<String, Object> userSpecificData = (HashMap<String, Object>) userData.get(UID); //get data specific to the current user
+                HashMap<String, Object> userGroupData = (HashMap<String, Object>) userSpecificData.get("groups");   //get the data of which groups this user is in
 
-                if(userGroupData!=null) {
+                if(userGroupData!=null) {   //avoid errors
                     for (String key : userGroupData.keySet()) {
-                        Object data = userGroupData.get(key);
-                        usersGroups.add(data.toString());
+                        Object data = userGroupData.get(key);   //get group IDs
+                        usersGroups.add(data.toString());       //add the group IDs to the arraylist
                     }
                 }
 
-                if(objData!=null) {
+                if(objData!=null) {         //avoid errors
                     for (String key : objData.keySet()) {
                         Object data = objData.get(key);
-                        if(usersGroups.contains(key)){
-                            HashMap<String, Object> groupData = (HashMap<String, Object>) data;
-                            String heading = groupData.get("heading").toString();
+                        if(usersGroups.contains(key)){  //only get group info for the groups a user is in
+                            HashMap<String, Object> groupData = (HashMap<String, Object>) data;     //get the group data for the current group
+                            String heading = groupData.get("heading").toString();                   //get heading, description, groupCreator, group picture, and chat ID
                             String description = groupData.get("description").toString();
                             String groupCreator = groupData.get("groupCreator").toString();
                             String groupPic =  groupData.get("picUri").toString();
                             String chatKey = groupData.get("chatId").toString();
-                            Group newGroup = new Group(key, heading, description, groupCreator, groupPic, chatKey);
-                            groups.add(newGroup);
-                            groupAdapter.notifyDataSetChanged();
+                            Group newGroup = new Group(key, heading, description, groupCreator, groupPic, chatKey); //create the group object
+                            groups.add(newGroup);                                                                   //add the group to the arraylist of groups
+                            groupAdapter.notifyDataSetChanged();                                                    //update the view
                         }
 
                     }
@@ -235,10 +234,6 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
                 userGroupsRef.setValue(id); //write the data
             }
 
-        }
-        if (requestCode == FROM_LOGIN) {
-            String UID = data.getStringExtra("UID");
-            Log.d("tag", UID);
         }
     }
 }

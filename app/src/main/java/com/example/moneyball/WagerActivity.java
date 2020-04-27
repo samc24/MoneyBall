@@ -148,7 +148,10 @@ public class WagerActivity extends AppCompatActivity {
                                 UID = user.getUid();
                             }
                             ArrayList<String> usersList = (ArrayList<String>)wagerData.get("usersList");
-                            String userVote = votesList.get(usersList.indexOf(UID));
+                            String userVote = "NA";
+                            if(usersList.contains(UID)) {
+                                userVote = votesList.get(usersList.indexOf(UID));
+                            }
                             String wagerResult = wagerData.get("wagerResult").toString();
                             ArrayList<String> winnerList = new ArrayList<>(), loserList = new ArrayList<>();
                             for(int i =0; i <votesList.size(); i++){
@@ -171,6 +174,8 @@ public class WagerActivity extends AppCompatActivity {
                                 userResultString = "You Win!";
                                 userResult.setText(userResultString);
                                 wagerResults.setText("You win! Watch your friends' dare videos or hop in the chat and ask for your payment from these people: " + loserList.toString());
+                            } else if(userVote.equals("NA")){
+                                wagerResults.setText("You weren't part of this wager!");
                             }
                             else{
                                 userResultString = "You Lose...";

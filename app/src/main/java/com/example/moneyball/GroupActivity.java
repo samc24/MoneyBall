@@ -47,12 +47,9 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
     final FirebaseStorage storage = FirebaseStorage.getInstance();
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference ref = database.getReference();
-    TextView heading;
-    TextView description;
+    TextView heading, description;
     ImageButton backButton;
-    String groupId;
-    String groupHeading;
-    String groupDescription;
+    String groupHeading, groupDescription;
     Uri groupPicUri;
     ImageView groupPic;
     String groupIdToPass;
@@ -64,12 +61,10 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group);
-
-//        Bundle extras = getIntent().getExtras();
-        Intent intent = getIntent(); //get intent that was passed from the previous page
+        Intent intent = getIntent(); //get intent that was passed from the previous page (UsersGroupsActivity)
         //get data passed from intent
         final String groupId = intent.getStringExtra("groupId");
-        groupIdToPass = groupId;
+        groupIdToPass = groupId; //needs to be a global variable
         groupDescription = intent.getStringExtra("description");
         groupHeading = intent.getStringExtra("heading");
         groupPicUri = Uri.parse(intent.getStringExtra("groupPic"));
@@ -88,7 +83,7 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
         heading.setText(groupHeading);
         description.setText(groupDescription);
         int numOfColumns = 2;
-        RecyclerView.LayoutManager recyclerManager = new GridLayoutManager(getApplicationContext(), numOfColumns);
+        RecyclerView.LayoutManager recyclerManager = new GridLayoutManager(getApplicationContext(), numOfColumns); //create recycler view manager
         wagerList.setLayoutManager(recyclerManager);
 
         wagers = new ArrayList<>(); //this will be used to store the groups wagers
@@ -104,7 +99,8 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
                         Object data = dataMap.get(key);
                         HashMap<String, Object> wagerData = (HashMap<String, Object>) data;
 
-                        //separate the data by groupname, heading, and description and pic
+                        //separate the data by groupname, heading, description, picture, wager creator, list of users, status of wager, value of the bet,
+                        // list of challenges, list of users votes, and the result of the wager
                         String groupName = wagerData.get("group").toString();
                         String heading = wagerData.get("heading").toString();
                         String description = wagerData.get("description").toString();
@@ -117,9 +113,7 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
                         ArrayList<String> votesList = (ArrayList<String>)wagerData.get("userVotes");
                         String wagerResult = wagerData.get("wagerResult").toString();
 
-                        Log.d("BET", "onDataChange: " + betVal);
-                        Log.d("KOBE", pic);
-
+                        //create the wager object
                         Wager newWager = new Wager(key, heading, groupName, pic, description, wagerCreator, usersList, openStatus, betVal, challengeList, votesList, wagerResult);  //create the new wager using the data from above
                         wagers.add(newWager); //add this wager to a list of wagers
                         wagerAdapter.notifyDataSetChanged();
@@ -140,10 +134,9 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent addWager = new Intent(getApplicationContext(), CreateWagerActivity.class);
-                addWager.putExtra("groupId", groupId);
-                startActivityForResult(addWager, ADD_WAGER_REQUEST);
-//                Snackbar.make(view, "Here's a Snackbar", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
+                Intent addWager = new Intent(getApplicationContext(), CreateWagerActivity.class); //create intent to the create wager page
+                addWager.putExtra("groupId", groupId);                                      //add group ID data to intent
+                startActivityForResult(addWager, ADD_WAGER_REQUEST);                               //start the activity
             }
         });
 
@@ -157,15 +150,17 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
             }
         });
 
-        Button invite;
+        Button invite; //initialize invite button
         invite = findViewById(R.id.invite);
 
+        //set on click listener for the invite button (https://stackoverflow.com/questions/2372248/launch-sms-application-with-an-intent)
         invite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent sendIntent = new Intent(Intent.ACTION_VIEW);
+                Intent sendIntent = new Intent(Intent.ACTION_VIEW); //create an intent to go to sms
                 sendIntent.setData(Uri.parse("sms:"));
 
+                //put message with the group ID to easily text to your friends
                 sendIntent.putExtra("sms_body", "Hey! I'd like to invite you to my group. Use this code to join it on the MoneyBall app! Code: " + groupId);
                 startActivity(sendIntent);
                 Toast.makeText(getApplicationContext(),  "Invite your friends!", Toast.LENGTH_SHORT).show();
@@ -173,14 +168,14 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
         });
 
         //opens the group's corresponding chat
-
-        Button groupchat;
-        groupchat = findViewById(R.id.groupchat);
+        Button groupchat;           //create button
+        groupchat = findViewById(R.id.groupchat); //get view
+        //set on click listener for the groupchat button
         groupchat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent toChatPage = new Intent(getApplicationContext(), GroupChatActivity.class);
-                toChatPage.putExtra("groupId",groupIdToPass);
+                Intent toChatPage = new Intent(getApplicationContext(), GroupChatActivity.class); //create an intent to go to the chat page
+                toChatPage.putExtra("groupId",groupIdToPass); //pass in the group ID
                 startActivity(toChatPage);
 
             }
@@ -202,10 +197,6 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
                 Toast.makeText(getApplicationContext(), "opening profile page!", Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(this, ProfilePreferencesPage.class));
                 return true;
-//            case R.id.someID4:
-//                Toast.makeText(getApplicationContext(), "someID2!", Toast.LENGTH_SHORT).show();
-//                startActivity(new Intent(this, Help.class));
-//                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -222,14 +213,12 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
         String id = ((WagerAdapter) wagerAdapter).getItem(position).getId();
         String wagerCreator = ((WagerAdapter) wagerAdapter).getItem(position).getWagerCreator();
         ArrayList<String> votesList = ((WagerAdapter) wagerAdapter).getItem(position).getUserVotes();
-        Log.d("tag", votesList.toString());
         double betVal = ((WagerAdapter) wagerAdapter).getItem(position).getBetVal();
         ArrayList<String> challengeList = ((WagerAdapter) wagerAdapter).getItem(position).getChallengeList();
-        Log.d("CHL", "itemClick:" + challengeList.toString());
 
-        Intent openWager = new Intent(getApplicationContext(), WagerActivity.class); //create the intent
+        Intent openWager = new Intent(getApplicationContext(), WagerActivity.class); //create the intent to go to the wager page
+
         //pass data to intent
-
         openWager.putExtra("usersList", usersList);
         openWager.putExtra("votesList", votesList);
         openWager.putExtra("description", description);
@@ -238,13 +227,12 @@ public class GroupActivity extends AppCompatActivity implements WagerAdapter.Ite
         openWager.putExtra("group", groupHeading);
         openWager.putExtra("groupDescription", groupDescription);
         openWager.putExtra("groupId", groupIdToPass);
-        openWager.putExtra("id", id); // change 0L to id
-        openWager.putExtra("pic", pic);//THIS IS THE WAGER PICTURE
+        openWager.putExtra("id", id);
+        openWager.putExtra("pic", pic);
         openWager.putExtra("groupPic", groupPicUri.toString());
         openWager.putExtra("betVal", betVal);
         openWager.putExtra("challengeList", challengeList);
         openWager.putExtra("position", position);
-        Log.d("BET", "onItemClick: " + betVal);
         startActivity(openWager);
 
     }
