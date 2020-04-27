@@ -179,7 +179,8 @@ public class CreateGroupActivity extends AppCompatActivity {
         exit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                setResult(RESULT_CANCELED, intent);
+                finish();
             }
         });
     }
