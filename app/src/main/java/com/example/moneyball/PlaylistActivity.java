@@ -86,7 +86,7 @@ public class PlaylistActivity extends YouTubeBaseActivity implements YouTubePlay
     };
 
     public void OnButtonClick(View view) {
-        Intent myIntent = new Intent(PlaylistActivity.this,  HomeActivity.class);
+        Intent myIntent = new Intent(PlaylistActivity.this,  UserGroupsActivity.class);
         startActivity(myIntent);
     }
 }

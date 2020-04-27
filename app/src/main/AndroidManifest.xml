@@ -18,8 +18,6 @@
         <activity android:name=".CloseWagerActivity" />
         <activity android:name=".NbaActivity"/>
         <activity android:name=".PaymentActivity"/>
-        <activity android:name=".MainActivity" />
-        <activity android:name=".HomeActivity"/>
         <activity android:name=".GroupActivity" />
         <activity android:name=".CreateWagerActivity" />
         <activity android:name=".UserGroupsActivity" />

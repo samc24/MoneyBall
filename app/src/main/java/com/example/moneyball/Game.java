@@ -1,11 +1,12 @@
 package com.example.moneyball;
 
 public class Game {
-    String homeTeam, awayTeam, score;
-    public Game(String homeTeam, String awayTeam, String score){
+    String homeTeam, awayTeam, score, stats;
+    public Game(String homeTeam, String awayTeam, String score, String stats){
         this.homeTeam = homeTeam;
         this.awayTeam = awayTeam;
         this.score = score;
+        this.stats = stats;
     }
 
     public String getawayTeam() {
@@ -31,4 +32,13 @@ public class Game {
     public void setScore(String score) {
         this.score = score;
     }
+
+    public String getStats() {
+        return stats;
+    }
+
+    public void setStats(String stats) {
+        this.stats = stats;
+    }
 }
+
