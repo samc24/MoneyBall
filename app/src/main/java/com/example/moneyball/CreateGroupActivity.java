@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -64,16 +65,31 @@ public class CreateGroupActivity extends AppCompatActivity {
         uploadGP.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED) {
-                    // Permission is not granted
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(CreateGroupActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                        Toast.makeText(getApplicationContext(),  "We need permission to upload pictures to associate with your wager", Toast.LENGTH_LONG).show();
+                if (Build.VERSION.SDK_INT >= 23) {
+                    if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                        // Permission is not granted
+                        if (ActivityCompat.shouldShowRequestPermissionRationale(CreateGroupActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                            Toast.makeText(getApplicationContext(), "We need permission to upload pictures to associate with your wager", Toast.LENGTH_LONG).show();
+                        } else {
+                            // No explanation needed; request the permission
+                            ActivityCompat.requestPermissions(CreateGroupActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_READ_STORAGE);
+                        }
                     } else {
-                        // No explanation needed; request the permission
-                        ActivityCompat.requestPermissions(CreateGroupActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_READ_STORAGE);
+                        uploadTV.setVisibility(View.GONE);
+
+                        Intent getIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                        getIntent.setType("image/*");
+
+                        Intent pickIntent = new Intent(Intent.ACTION_PICK);
+                        pickIntent.setDataAndType(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+
+                        Intent chooserIntent = Intent.createChooser(getIntent, "Select Image");
+                        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{pickIntent});
+
+                        startActivityForResult(chooserIntent, PICK_IMAGE);
                     }
                 }
-                else {
+                else{
                     uploadTV.setVisibility(View.GONE);
 
                     Intent getIntent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -86,6 +102,7 @@ public class CreateGroupActivity extends AppCompatActivity {
                     chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{pickIntent});
 
                     startActivityForResult(chooserIntent, PICK_IMAGE);
+
                 }
             }
         });
