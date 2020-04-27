@@ -275,9 +275,11 @@ public class WagerActivity extends AppCompatActivity {
         bet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO: Izzy link ur payment stuff here
 
-                Toast.makeText(getApplicationContext(),  "Opening Bet Payment Stuff", Toast.LENGTH_LONG).show();
+                Intent payIntent = new Intent(WagerActivity.this,  PaymentActivity.class);
+                payIntent.putExtra("betVal",betVal);
+                startActivity(payIntent);
+                Toast.makeText(getApplicationContext(),  "Select a Payment Option", Toast.LENGTH_LONG).show();
             }
         });
 
