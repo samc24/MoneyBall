@@ -13,30 +13,28 @@ public class PaymentActivity extends AppCompatActivity {
 
     ImageButton venmoButton;
     ImageButton googlepayButton;
-    TextView betValButton;
+    TextView Val;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_payment);
+        setContentView(R.layout.activity_payment); // initializing layout and views
         venmoButton = findViewById(R.id.venmoButton);
         googlepayButton = findViewById(R.id.googlepayButton);
-        betValButton = findViewById(R.id.betValueButton);
-        Bundle extras = getIntent().getExtras();
-        final double betVal = extras.getDouble("betVal");
+        Val = findViewById(R.id.betValueButton);
 
-        betValButton.setText("Pay The Winner of Wager");
+        Val.setText("Pay The Winner of Wager");   //Sets text to TextView
 
 
         venmoButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.venmo");
+            public void onClick(View v) {  //on click listener for venmo option
+                Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.venmo"); //retrieves package details for venmo and stores in variable
 
-                if (launchIntent != null){
-                    startActivity(launchIntent);
+                if (launchIntent != null){  // if variable is not empty, then this means venmo is installed in user's phone.
+                    startActivity(launchIntent); // launches venmo app
                 }else{
-                    Toast.makeText(PaymentActivity.this,"Venmo Download Required",Toast.LENGTH_LONG).show();
+                    Toast.makeText(PaymentActivity.this,"Venmo Download Required",Toast.LENGTH_LONG).show(); //if variable empty, display toast telling user to download venmo
 
                 }
 
@@ -45,14 +43,14 @@ public class PaymentActivity extends AppCompatActivity {
 
         googlepayButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.google.android.apps.walletnfcrel");
+            public void onClick(View v) { //on click listener for venmo option
+                Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.google.android.apps.walletnfcrel"); //retrieves package details for googlePay and stores in variable
 
 
-                if (launchIntent != null){
-                    startActivity(launchIntent);
+                if (launchIntent != null){   // if variable is not empty, then this means googlepay app is installed in user's phone.
+                    startActivity(launchIntent); //launches googlepay app
                 }else{
-                    Toast.makeText(PaymentActivity.this,"Google Pay Download Required",Toast.LENGTH_LONG).show();
+                    Toast.makeText(PaymentActivity.this,"Google Pay Download Required",Toast.LENGTH_LONG).show(); ////if variable empty, display toast telling user to download googlePay app
 
                 }
 
