@@ -289,7 +289,7 @@ public class WagerActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent myIntent = new Intent(WagerActivity.this,  DareActivity.class); //create intent to go to the dare activity
-                Toast.makeText(getApplicationContext(),"Spin for DARE", Toast.LENGTH_LONG).show(); //create a toast
+                Toast.makeText(getApplicationContext(),"Spin for Challenge", Toast.LENGTH_LONG).show(); //create a toast
                 myIntent.putExtra("challengeList", challengeList); //pass the list of challenges through the intent
                 startActivity(myIntent); //start the activity
             }
