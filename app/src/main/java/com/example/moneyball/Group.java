@@ -71,20 +71,5 @@ public class Group {
     public void setChatId(String chatId) {
         this.chatId = chatId;
     }
-
-    public static Comparator<Group> SORT_DESCENDING = new Comparator<Group>() {
-        @Override
-        public int compare(Group o1, Group o2) {
-            return o1.heading.compareTo(o2.heading);
-        }
-    };
-
-    public static Comparator<Group> SORT_ASCENDING = new Comparator<Group>() {
-        @Override
-        public int compare(Group o1, Group o2) {
-            return o2.heading.compareTo(o1.heading);
-        }
-    };
-
 }
 

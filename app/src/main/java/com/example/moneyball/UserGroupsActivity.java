@@ -44,7 +44,6 @@ import java.util.HashMap;
 public class UserGroupsActivity extends AppCompatActivity implements GroupAdapter.ItemClickListener {
     private RecyclerView.Adapter groupAdapter;
     private RecyclerView groupList;
-    private SharedPreferences pref;
 
     public static final int ADD_WAGER_REQUEST = 1;
     private final int NEW_GROUP = 123;
@@ -64,8 +63,6 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_group);
         groupList = findViewById(R.id.groupList);
-
-        pref = this.getSharedPreferences("MY_Data", MODE_PRIVATE);
 
         groups = new ArrayList<>();
         usersGroups = new ArrayList<>();
@@ -157,119 +154,12 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
                 Toast.makeText(getApplicationContext(),  "Getting NBA Statistics! Please wait...", Toast.LENGTH_LONG).show();
                 startActivity(new Intent(this, NbaActivity.class));
                 return true;
-            case R.id.action_sort:
-                showSortDialog();
-                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    private void showSortDialog() {
-        //options in display in dialog
-        String[] options = {"Ascending", "Descending"};
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Sort By");
-        builder.setIcon(R.drawable.ic_action_sort);
-        builder.setItems(options, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (which == 0) {//Ascending is clicked
-                    SharedPreferences.Editor editor = pref.edit();
-                    editor.putString("Sort", "ascending");//where sort is the key and ascending is value string
-                    editor.apply();
-                    showData();
-                }
-                if (which == 1){//Descending is clicked
-                    SharedPreferences.Editor editor = pref.edit();
-                    editor.putString("Sort", "descending");
-                    editor.apply();
-                    showData();
-                }
-            }
-        });
-        builder.create().show(); //shows dialog for sorting option
-
-    }
-
-    private void showData() {
-        DatabaseReference groupRef = ref;           //set reference to read data
-        groupRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                groups.clear();                     //make sure the groups arraylist is empty so as not to add duplicate data
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser(); //get the current user
-                String UID = "";        //get the user ID
-                if (user != null) {         //avoid errors
-                    UID = user.getUid();
-                }
-                HashMap<String, Object> dataMap = (HashMap<String, Object>) dataSnapshot.getValue();    //get hashmap of data
-                HashMap<String, Object> objData = (HashMap<String, Object>) dataMap.get("groups");      //get group data
-                HashMap<String, Object> userData = (HashMap<String, Object>) dataMap.get("users");      //get user data
-                HashMap<String, Object> userSpecificData = (HashMap<String, Object>) userData.get(UID); //get data specific to the current user
-                HashMap<String, Object> userGroupData = (HashMap<String, Object>) userSpecificData.get("groups");   //get the data of which groups this user is in
-
-                if (userGroupData != null) {   //avoid errors
-                    for (String key : userGroupData.keySet()) {
-                        Object data = userGroupData.get(key);   //get group IDs
-                        usersGroups.add(data.toString());       //add the group IDs to the arraylist
-                    }
-                }
-
-                if (objData != null) { //avoid errors
-                    for (String key : objData.keySet()) {
-                        Object data = objData.get(key);
-                        if (usersGroups.contains(key)) {  //only get group info for the groups a user is in
-                            HashMap<String, Object> groupData = (HashMap<String, Object>) data;     //get the group data for the current group
-                            String heading = groupData.get("heading").toString();                   //get heading, description, groupCreator, group picture, and chat ID
-                            String description = groupData.get("description").toString();
-                            String groupCreator = groupData.get("groupCreator").toString();
-                            String groupPic = groupData.get("picUri").toString();
-                            String chatKey = groupData.get("chatId").toString();
-                            Group newGroup = new Group(key, heading, description, groupCreator, groupPic, chatKey); //create the group object
-                            groups.add(newGroup);                                                                   //add the group to the arraylist of groups
-                            groupAdapter.notifyDataSetChanged();                                                    //update the view
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
-
-//        Query myTopPostsQuery = groupRef.child("users").child(user.getUid()).child("groups").orderByChild("Ordering by child whatever");//the method i need is orderbychild() for sorting in firebase
-        for (Group item : groups) {
-            System.out.println(item.heading);
-        }
-
-        //get settings from shared preferences of sort options
-        String mSortSettings = pref.getString("Sort", "ascending"); //ascending means its default settings when app starts first
-        if (mSortSettings.equals("ascending")) {
-            Collections.sort(groups, Group.SORT_ASCENDING);
-            for (Group item : groups) {
-                System.out.println(item.heading);
-            }
-            Log.d("SORTED", "Should be sorted");
-        } else if (mSortSettings.equals("descending")) {
-            Collections.sort(groups, Group.SORT_DESCENDING);
-            for (Group item : groups) {
-                System.out.println(item.heading);
-            }
-            Log.d("SORTED", "Should be sorted");
-        }
-
-        int numOfColumns = 1;
-        RecyclerView.LayoutManager recyclerManager = new GridLayoutManager(getApplicationContext(), numOfColumns);
-        groupList.setLayoutManager(recyclerManager);
-
-        groupAdapter = new GroupAdapter(groups);
-        groupList.setAdapter(groupAdapter);
-        groupAdapter.notifyDataSetChanged();
-
-        ((GroupAdapter) groupAdapter).setClickListener(this);
-    }
 
     @Override
     // https://stackoverflow.com/questions/40587168/simple-android-grid-example-using-recyclerview-with-gridlayoutmanager-like-the
