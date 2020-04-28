@@ -25,7 +25,7 @@ public class PaymentActivity extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         final double betVal = extras.getDouble("betVal");
 
-        betValButton.setText("Pay $"+betVal +"0 To Winner of Wager");
+        betValButton.setText("Pay The Winner of Wager");
 
 
         venmoButton.setOnClickListener(new View.OnClickListener() {
