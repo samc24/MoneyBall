@@ -4,6 +4,7 @@ package com.example.moneyball;
 import android.net.Uri;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
 /*
 WAGER CLASS:
@@ -142,4 +143,18 @@ public class Wager {
     public void setWagerResult(String wagerResult) {
         this.wagerResult = wagerResult;
     }
+
+    public static Comparator<Wager> SORT_DESCENDING = new Comparator<Wager>() {
+        @Override
+        public int compare(Wager o1, Wager o2) {
+            return o1.heading.compareTo(o2.heading);
+        }
+    };
+
+    public static Comparator<Wager> SORT_ASCENDING = new Comparator<Wager>() {
+        @Override
+        public int compare(Wager o1, Wager o2) {
+            return o2.heading.compareTo(o1.heading);
+        }
+    };
 }

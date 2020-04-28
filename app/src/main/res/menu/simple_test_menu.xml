@@ -17,11 +17,10 @@
         android:icon="@drawable/human_dude"
         app:showAsAction="always"></item>
 
-<!--    <item-->
-<!--        android:id="@+id/someID4"-->
-<!--        android:icon="@drawable/money"-->
-<!--        android:title="Beak"-->
-<!--        app:showAsAction="false"></item>-->
+    <item
+        android:id="@+id/action_sort"
+        android:title="Sort By"
+        app:showAsAction="never"></item>
 
 <!--    <item-->
 <!--        android:id="@+id/someID5"-->

@@ -199,11 +199,15 @@ public class ProfilePreferencesPage extends AppCompatActivity {
                 Intent intent = new Intent();
                 intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
 
-//for Android 5-7
-                intent.putExtra("app_package", getApplicationContext().getPackageName());
-                intent.putExtra("app_uid", getApplicationInfo().uid);
-                //for Android 8 and above
-//                intent.putExtra("android.provider.extra.APP_PACKAGE", getPackageName());
+                if(Build.VERSION.SDK_INT <= 23){
+                    //for Android 5-7
+                    intent.putExtra("app_package", getApplicationContext().getPackageName());
+                    intent.putExtra("app_uid", getApplicationInfo().uid);
+                }
+                else{
+                    //for Android 8 and above
+                    intent.putExtra("android.provider.extra.APP_PACKAGE", getPackageName());
+                }
 
                 startActivity(intent);
             }
