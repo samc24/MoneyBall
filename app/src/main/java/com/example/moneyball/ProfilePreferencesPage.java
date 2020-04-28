@@ -11,7 +11,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.renderscript.Sampler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -43,7 +42,6 @@ import com.squareup.picasso.Target;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.HashMap;
 
 public class ProfilePreferencesPage extends AppCompatActivity {
     private static final String SCHEME = "package";
@@ -68,7 +66,7 @@ public class ProfilePreferencesPage extends AppCompatActivity {
     private TextView emailTV;
     private EditText usernameET;
     private Uri profilePicUri;
-    private Button notifyButton;
+    private Button appInfoButton;
     private Button sendNotifyButton;
 
 
@@ -88,11 +86,11 @@ public class ProfilePreferencesPage extends AppCompatActivity {
         StorageReference ref = storage.getReference();
         ref.child("profile_pictures/" + user.getUid() + ".png").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
-            public void onSuccess(Uri uri) {
+            public void onSuccess(Uri uri) {//get storage reference from the Firebase Storage
 
                 profilePicHolder = findViewById(R.id.profilePicHolder);
 
-                Picasso.get().load(uri).into(new Target(){
+                Picasso.get().load(uri).into(new Target(){//uses picasso to load the profile picture into the relative layout
                     @Override
                     public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                         profilePicHolder.setBackground(new BitmapDrawable(getApplicationContext().getResources(), bitmap));
@@ -115,7 +113,7 @@ public class ProfilePreferencesPage extends AppCompatActivity {
         uploadProfilePic = findViewById(R.id.uploadProfilePic);
         uploadProfilePic.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View view) {//uploading a profile picture
                 if (Build.VERSION.SDK_INT >= 23) {
                     if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                         // Permission is not granted
@@ -157,11 +155,11 @@ public class ProfilePreferencesPage extends AppCompatActivity {
             }
         });
 
-        final DatabaseReference username_ref = db_ref.child("users/" + user.getUid()).child("profile").child("username");
+        final DatabaseReference username_ref = db_ref.child("users/" + user.getUid()).child("profile").child("username");//getting database reference for the username
         usernameET = findViewById(R.id.usernameInput);
         username_ref.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {//getting username
                 String username = (String) dataSnapshot.getValue();//we can do this because we are already at the username key and we are just getting access to what "username" holds
                 if (username != null) {
                     usernameET.setText(username);
@@ -176,7 +174,7 @@ public class ProfilePreferencesPage extends AppCompatActivity {
         Button done = findViewById(R.id.done);
         done.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View view) {//when done, all the profile picture, the username gets saved under the user.
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
                 String username = usernameET.getText().toString();
@@ -204,16 +202,16 @@ public class ProfilePreferencesPage extends AppCompatActivity {
             }
         });
 
-        notifyButton = findViewById(R.id.notifications);
-        notifyButton.setOnClickListener(new View.OnClickListener(){
+        appInfoButton = findViewById(R.id.appInfo);
+        appInfoButton.setOnClickListener(new View.OnClickListener(){
             @Override
-            public void onClick(View v) {
+            public void onClick(View v) {//set on click listener and opens the app information
                 showInstalledAppDetails(getApplicationContext(), "com.example.moneyball");
             }
         });
     }
 
-    public static void showInstalledAppDetails(Context context, String packageName) {
+    public static void showInstalledAppDetails(Context context, String packageName) {//function redirects users to the app info
         Intent intent = new Intent();
         final int apiLevel = Build.VERSION.SDK_INT;
         if (apiLevel >= 9) { // above 2.3
@@ -233,10 +231,10 @@ public class ProfilePreferencesPage extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {//after an activity is finished, this method gets called on the return
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_IMAGE) {
-            if (resultCode == RESULT_OK) {
+        if (requestCode == PICK_IMAGE) {//when an image is picked
+            if (resultCode == RESULT_OK) {//if request is good, then make sure to upload the picture into the relative layout
                 profilePicUri = data.getData();
                 RelativeLayout layout = findViewById(R.id.profilePicHolder);
                 InputStream inputStream = null;
@@ -252,7 +250,7 @@ public class ProfilePreferencesPage extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {//permissions are being asked here
         switch (requestCode) {
             case REQUEST_READ_STORAGE: {
                 // If request is cancelled, the result arrays are empty.
