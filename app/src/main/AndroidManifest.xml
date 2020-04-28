@@ -35,7 +35,6 @@
         <activity android:name=".UploadActivity" />
         <activity android:name=".PlaylistActivity" />
         <activity android:name=".RegistrationActivity" />
-        <activity android:name=".DashboardActivity" />
 
         <meta-data
             android:name="preloaded_fonts"

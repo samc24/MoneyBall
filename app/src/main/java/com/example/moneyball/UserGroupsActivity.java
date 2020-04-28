@@ -1,11 +1,16 @@
 package com.example.moneyball;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,10 +25,12 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
@@ -31,10 +38,14 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 public class UserGroupsActivity extends AppCompatActivity implements GroupAdapter.ItemClickListener {
     private RecyclerView.Adapter groupAdapter;
+    private RecyclerView groupList;
+    private SharedPreferences pref;
+
     public static final int ADD_WAGER_REQUEST = 1;
     private final int NEW_GROUP = 123;
     private final int ADD_GROUP = 321;
@@ -43,6 +54,7 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
     ArrayList<String> usersGroups;  //an arraylist of strings to hold the group IDs a user is in
 
     final FirebaseDatabase database = FirebaseDatabase.getInstance();   //get database instance
+    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser(); //get the current user
     FirebaseStorage storage = FirebaseStorage.getInstance();            //get the firebase storage instance (for images)
     DatabaseReference ref = database.getReference();                    //get the reference to the database
 
@@ -51,19 +63,23 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_group);
-        RecyclerView groupList = findViewById(R.id.groupList);
+        groupList = findViewById(R.id.groupList);
+
+        pref = this.getSharedPreferences("MY_Data", MODE_PRIVATE);
+
+        groups = new ArrayList<>();
+        usersGroups = new ArrayList<>();
+
         int numOfColumns = 1;
         RecyclerView.LayoutManager recyclerManager = new GridLayoutManager(getApplicationContext(), numOfColumns);
         groupList.setLayoutManager(recyclerManager);
-        groups = new ArrayList<>();
-        usersGroups = new ArrayList<>();
 
         DatabaseReference groupRef = ref;           //set reference to read data
         groupRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 groups.clear();                     //make sure the groups arraylist is empty so as not to add duplicate data
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser(); //get the current user
+
                 String UID = "";        //get the user ID
                 if(user!=null){         //avoid errors
                     UID = user.getUid();
@@ -81,7 +97,7 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
                     }
                 }
 
-                if(objData!=null) {         //avoid errors
+                if(objData!=null) { //avoid errors
                     for (String key : objData.keySet()) {
                         Object data = objData.get(key);
                         if(usersGroups.contains(key)){  //only get group info for the groups a user is in
@@ -95,7 +111,6 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
                             groups.add(newGroup);                                                                   //add the group to the arraylist of groups
                             groupAdapter.notifyDataSetChanged();                                                    //update the view
                         }
-
                     }
                 }
             }
@@ -109,6 +124,7 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
 
         groupAdapter = new GroupAdapter(groups);
         groupList.setAdapter(groupAdapter);
+        groupAdapter.notifyDataSetChanged();
         ((GroupAdapter) groupAdapter).setClickListener(this);
 
         //Click on the floating button to add or join a group
@@ -141,9 +157,119 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
                 Toast.makeText(getApplicationContext(),  "Getting NBA Statistics! Please wait...", Toast.LENGTH_LONG).show();
                 startActivity(new Intent(this, NbaActivity.class));
                 return true;
+            case R.id.action_sort:
+                showSortDialog();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void showSortDialog() {
+        //options in display in dialog
+        String[] options = {"Ascending", "Descending"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Sort By");
+        builder.setIcon(R.drawable.ic_action_sort);
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (which == 0) {//Ascending is clicked
+                    SharedPreferences.Editor editor = pref.edit();
+                    editor.putString("Sort", "ascending");//where sort is the key and ascending is value string
+                    editor.apply();
+                    showData();
+                }
+                if (which == 1){//Descending is clicked
+                    SharedPreferences.Editor editor = pref.edit();
+                    editor.putString("Sort", "descending");
+                    editor.apply();
+                    showData();
+                }
+            }
+        });
+        builder.create().show(); //shows dialog for sorting option
+
+    }
+
+    private void showData(){
+        DatabaseReference groupRef = ref;           //set reference to read data
+        groupRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                groups.clear();                     //make sure the groups arraylist is empty so as not to add duplicate data
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser(); //get the current user
+                String UID = "";        //get the user ID
+                if(user!=null){         //avoid errors
+                    UID = user.getUid();
+                }
+                HashMap<String, Object> dataMap = (HashMap<String, Object>) dataSnapshot.getValue();    //get hashmap of data
+                HashMap<String, Object> objData = (HashMap<String, Object>) dataMap.get("groups");      //get group data
+                HashMap<String, Object> userData = (HashMap<String, Object>) dataMap.get("users");      //get user data
+                HashMap<String, Object> userSpecificData = (HashMap<String, Object>) userData.get(UID); //get data specific to the current user
+                HashMap<String, Object> userGroupData = (HashMap<String, Object>) userSpecificData.get("groups");   //get the data of which groups this user is in
+
+                if(userGroupData!=null) {   //avoid errors
+                    for (String key : userGroupData.keySet()) {
+                        Object data = userGroupData.get(key);   //get group IDs
+                        usersGroups.add(data.toString());       //add the group IDs to the arraylist
+                    }
+                }
+
+                if(objData!=null) { //avoid errors
+                    for (String key : objData.keySet()) {
+                        Object data = objData.get(key);
+                        if(usersGroups.contains(key)){  //only get group info for the groups a user is in
+                            HashMap<String, Object> groupData = (HashMap<String, Object>) data;     //get the group data for the current group
+                            String heading = groupData.get("heading").toString();                   //get heading, description, groupCreator, group picture, and chat ID
+                            String description = groupData.get("description").toString();
+                            String groupCreator = groupData.get("groupCreator").toString();
+                            String groupPic =  groupData.get("picUri").toString();
+                            String chatKey = groupData.get("chatId").toString();
+                            Group newGroup = new Group(key, heading, description, groupCreator, groupPic, chatKey); //create the group object
+                            groups.add(newGroup);                                                                   //add the group to the arraylist of groups
+                            groupAdapter.notifyDataSetChanged();                                                    //update the view
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+
+//        Query myTopPostsQuery = groupRef.child("users").child(user.getUid()).child("groups").orderByChild("Ordering by child whatever");//the method i need is orderbychild() for sorting in firebase
+        for (Group item : groups){
+            System.out.println(item.heading);
+        }
+
+        //get settings from shared preferences of sort options
+        String mSortSettings = pref.getString("Sort", "ascending"); //ascending means its default settings when app starts first
+        if (mSortSettings.equals("ascending")){
+            Collections.sort(groups, Group.SORT_ASCENDING);
+            for (Group item : groups){
+                System.out.println(item.heading);
+            }
+            Log.d("SORTED", "Should be sorted");
+        }
+        else if (mSortSettings.equals("descending")){
+            Collections.sort(groups, Group.SORT_DESCENDING);
+            for (Group item : groups){
+                System.out.println(item.heading);
+            }
+            Log.d("SORTED", "Should be sorted");
+        }
+
+        int numOfColumns = 1;
+        RecyclerView.LayoutManager recyclerManager = new GridLayoutManager(getApplicationContext(), numOfColumns);
+        groupList.setLayoutManager(recyclerManager);
+
+        groupAdapter = new GroupAdapter(groups);
+        groupList.setAdapter(groupAdapter);
+        groupAdapter.notifyDataSetChanged();
+
+        ((GroupAdapter) groupAdapter).setClickListener(this);
     }
 
     @Override
