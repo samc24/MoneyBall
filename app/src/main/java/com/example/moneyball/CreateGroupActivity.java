@@ -65,7 +65,7 @@ public class CreateGroupActivity extends AppCompatActivity {
         uploadGP.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (Build.VERSION.SDK_INT >= 23) {
+                if (Build.VERSION.SDK_INT >= 23) { // if we need to ask for permissions (sdk 23 and above)
                     if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                         // Permission is not granted
                         if (ActivityCompat.shouldShowRequestPermissionRationale(CreateGroupActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
@@ -75,14 +75,17 @@ public class CreateGroupActivity extends AppCompatActivity {
                             ActivityCompat.requestPermissions(CreateGroupActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_READ_STORAGE);
                         }
                     } else {
-                        uploadTV.setVisibility(View.GONE);
+                        uploadTV.setVisibility(View.GONE); // so that the image isn't blocked after uploading
 
+                        // defining that we are collecting an image
                         Intent getIntent = new Intent(Intent.ACTION_GET_CONTENT);
                         getIntent.setType("image/*");
 
+                        // generating a picker so the user chooses which app to use to upload the image
                         Intent pickIntent = new Intent(Intent.ACTION_PICK);
                         pickIntent.setDataAndType(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
 
+                        // opening the chosen app to select image
                         Intent chooserIntent = Intent.createChooser(getIntent, "Select Image");
                         chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{pickIntent});
 
@@ -207,12 +210,12 @@ public class CreateGroupActivity extends AppCompatActivity {
                 RelativeLayout layout = findViewById(R.id.groupPicHolder);
                 InputStream inputStream = null;
                 try {
-                    inputStream = getContentResolver().openInputStream(selectedImageUri);
+                    inputStream = getContentResolver().openInputStream(selectedImageUri); // creating an inputstream of the image form the uri
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
-                bg = Drawable.createFromStream(inputStream, selectedImageUri.toString());
-                layout.setBackground(bg);
+                bg = Drawable.createFromStream(inputStream, selectedImageUri.toString()); // creating a drawable from the input stream
+                layout.setBackground(bg); // displaying the chosen image on the screen
             }
         }
     }
@@ -232,7 +235,6 @@ public class CreateGroupActivity extends AppCompatActivity {
                 return;
             }
 
-            // other 'case' lines to check for other permissions this app might request.
         }
     }
 
