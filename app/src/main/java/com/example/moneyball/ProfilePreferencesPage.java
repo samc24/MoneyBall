@@ -209,20 +209,6 @@ public class ProfilePreferencesPage extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 showInstalledAppDetails(getApplicationContext(), "com.example.moneyball");
-//                Intent intent = new Intent();
-//                intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
-
-//                if(Build.VERSION.SDK_INT <= 23){
-//                    //for Android 5-7
-//                    intent.putExtra("app_package", getApplicationContext().getPackageName());
-//                    intent.putExtra("app_uid", getApplicationInfo().uid);
-//                }
-//                else{
-//                    //for Android 8 and abovew
-//                    intent.putExtra("android.provider.extra.APP_PACKAGE", getPackageName());
-//                }
-
-//                startActivity(intent);
             }
         });
     }
