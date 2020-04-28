@@ -1,6 +1,7 @@
 package com.example.moneyball;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -9,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.renderscript.Sampler;
 import android.util.Log;
 import android.view.View;
@@ -44,6 +46,16 @@ import java.io.InputStream;
 import java.util.HashMap;
 
 public class ProfilePreferencesPage extends AppCompatActivity {
+    private static final String SCHEME = "package";
+
+    private static final String APP_PKG_NAME_21 = "com.example.moneyball";
+
+    private static final String APP_PKG_NAME_22 = "pkg";
+
+    private static final String APP_DETAILS_PACKAGE_NAME = "com.example.moneyball";
+
+    private static final String APP_DETAILS_CLASS_NAME = "com.example.moneyball.InstalledAppDetails";
+
     private final int PICK_IMAGE = 1, REQUEST_READ_STORAGE = 100;
 
     Drawable bg;
@@ -196,29 +208,43 @@ public class ProfilePreferencesPage extends AppCompatActivity {
         notifyButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
+                showInstalledAppDetails(getApplicationContext(), "com.example.moneyball");
+//                Intent intent = new Intent();
+//                intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
 
-                if(Build.VERSION.SDK_INT <= 23){
-                    //for Android 5-7
-                    intent.putExtra("app_package", getApplicationContext().getPackageName());
-                    intent.putExtra("app_uid", getApplicationInfo().uid);
-                }
-                else{
-                    //for Android 8 and above
-                    intent.putExtra("android.provider.extra.APP_PACKAGE", getPackageName());
-                }
+//                if(Build.VERSION.SDK_INT <= 23){
+//                    //for Android 5-7
+//                    intent.putExtra("app_package", getApplicationContext().getPackageName());
+//                    intent.putExtra("app_uid", getApplicationInfo().uid);
+//                }
+//                else{
+//                    //for Android 8 and abovew
+//                    intent.putExtra("android.provider.extra.APP_PACKAGE", getPackageName());
+//                }
 
-                startActivity(intent);
+//                startActivity(intent);
             }
         });
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+    public static void showInstalledAppDetails(Context context, String packageName) {
+        Intent intent = new Intent();
+        final int apiLevel = Build.VERSION.SDK_INT;
+        if (apiLevel >= 9) { // above 2.3
+            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+            Uri uri = Uri.fromParts(SCHEME, packageName, null);
+            intent.setData(uri);
+        } else { // below 2.3
+            final String appPkgName = (apiLevel == 8 ? APP_PKG_NAME_22
+                    : APP_PKG_NAME_21);
+            intent.setAction(Intent.ACTION_VIEW);
+            intent.setClassName(APP_DETAILS_PACKAGE_NAME,
+                    APP_DETAILS_CLASS_NAME);
+            intent.putExtra(appPkgName, packageName);
+        }
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {

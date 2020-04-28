@@ -106,9 +106,10 @@
         android:id="@+id/notifications"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="96dp"
-        android:layout_marginBottom="32dp"
-        android:text="Change Notification Settings"
+        android:layout_marginStart="172dp"
+        android:layout_marginBottom="28dp"
+        android:backgroundTint="@color/colorGreenLight"
+        android:text="App Info"
         app:layout_constraintBottom_toTopOf="@+id/done"
         app:layout_constraintStart_toStartOf="parent" />
 

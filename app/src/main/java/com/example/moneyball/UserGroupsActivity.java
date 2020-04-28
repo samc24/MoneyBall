@@ -192,7 +192,7 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
 
     }
 
-    private void showData(){
+    private void showData() {
         DatabaseReference groupRef = ref;           //set reference to read data
         groupRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -200,7 +200,7 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
                 groups.clear();                     //make sure the groups arraylist is empty so as not to add duplicate data
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser(); //get the current user
                 String UID = "";        //get the user ID
-                if(user!=null){         //avoid errors
+                if (user != null) {         //avoid errors
                     UID = user.getUid();
                 }
                 HashMap<String, Object> dataMap = (HashMap<String, Object>) dataSnapshot.getValue();    //get hashmap of data
@@ -209,22 +209,22 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
                 HashMap<String, Object> userSpecificData = (HashMap<String, Object>) userData.get(UID); //get data specific to the current user
                 HashMap<String, Object> userGroupData = (HashMap<String, Object>) userSpecificData.get("groups");   //get the data of which groups this user is in
 
-                if(userGroupData!=null) {   //avoid errors
+                if (userGroupData != null) {   //avoid errors
                     for (String key : userGroupData.keySet()) {
                         Object data = userGroupData.get(key);   //get group IDs
                         usersGroups.add(data.toString());       //add the group IDs to the arraylist
                     }
                 }
 
-                if(objData!=null) { //avoid errors
+                if (objData != null) { //avoid errors
                     for (String key : objData.keySet()) {
                         Object data = objData.get(key);
-                        if(usersGroups.contains(key)){  //only get group info for the groups a user is in
+                        if (usersGroups.contains(key)) {  //only get group info for the groups a user is in
                             HashMap<String, Object> groupData = (HashMap<String, Object>) data;     //get the group data for the current group
                             String heading = groupData.get("heading").toString();                   //get heading, description, groupCreator, group picture, and chat ID
                             String description = groupData.get("description").toString();
                             String groupCreator = groupData.get("groupCreator").toString();
-                            String groupPic =  groupData.get("picUri").toString();
+                            String groupPic = groupData.get("picUri").toString();
                             String chatKey = groupData.get("chatId").toString();
                             Group newGroup = new Group(key, heading, description, groupCreator, groupPic, chatKey); //create the group object
                             groups.add(newGroup);                                                                   //add the group to the arraylist of groups
@@ -240,22 +240,21 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
         });
 
 //        Query myTopPostsQuery = groupRef.child("users").child(user.getUid()).child("groups").orderByChild("Ordering by child whatever");//the method i need is orderbychild() for sorting in firebase
-        for (Group item : groups){
+        for (Group item : groups) {
             System.out.println(item.heading);
         }
 
         //get settings from shared preferences of sort options
         String mSortSettings = pref.getString("Sort", "ascending"); //ascending means its default settings when app starts first
-        if (mSortSettings.equals("ascending")){
+        if (mSortSettings.equals("ascending")) {
             Collections.sort(groups, Group.SORT_ASCENDING);
-            for (Group item : groups){
+            for (Group item : groups) {
                 System.out.println(item.heading);
             }
             Log.d("SORTED", "Should be sorted");
-        }
-        else if (mSortSettings.equals("descending")){
+        } else if (mSortSettings.equals("descending")) {
             Collections.sort(groups, Group.SORT_DESCENDING);
-            for (Group item : groups){
+            for (Group item : groups) {
                 System.out.println(item.heading);
             }
             Log.d("SORTED", "Should be sorted");
