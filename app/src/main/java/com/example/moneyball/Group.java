@@ -1,5 +1,16 @@
 package com.example.moneyball;
 
+/*
+GROUP CLASS:
+ID: A unique key for the group
+HEADING: The title of the group
+DESCRIPTION: The description for the group
+PICTUREURI: The path to the group image in firebase storage
+GROUPCREATOR: The ID of the user who created the group
+CHATID: ID for the group chat
+
+ */
+
 public class Group {
     String id, heading, description, groupCreator, picUri,chatId;
     public Group(String id, String heading, String description, String groupCreator, String picUri, String chatId){

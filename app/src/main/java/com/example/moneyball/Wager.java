@@ -5,6 +5,22 @@ import android.net.Uri;
 
 import java.util.ArrayList;
 
+/*
+WAGER CLASS:
+ID: A unique key for the wager
+HEADING: The title of the wager
+DESCRIPTION: The description for the wager
+PICTUREURI: The path to the image in firebase storage
+GROUP: The ID of the group the wager is part of
+WAGERCREATOR: The ID of the user who created the wager
+WAGERRESULT: The result of the wager (either Y or N), the wager creator chooses this after the wager is closed
+USERSLIST: Arraylist of user IDs of those who are part of the wager
+CHALLENGELIST: Arraylist of dare ideas entered by users
+USERVOTES: Arraylist of "Y" or "N" selected by users
+OPENSTATUS: Boolean to tell if the wager is still open or if its been closed
+BETVAL: the value of the bet for the wager
+ */
+
 public class Wager {
     String id, heading, description, pictureUri, group, wagerCreator, wagerResult;
     ArrayList<String> usersList, challengeList, userVotes;
