@@ -173,6 +173,7 @@ public class GroupChatActivity extends AppCompatActivity {
 
         String messageText = userMessageInput.getText().toString();
         String messageKey = currentGroupRef.push().getKey();
+        userMessageInput.setText("");
 
         if (TextUtils.isEmpty(messageText)){
             Toast.makeText(this,"Write your message", Toast.LENGTH_LONG);
