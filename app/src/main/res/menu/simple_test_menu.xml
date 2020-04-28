@@ -17,11 +17,6 @@
         android:icon="@drawable/human_dude"
         app:showAsAction="always"></item>
 
-    <item
-        android:id="@+id/action_sort"
-        android:title="Sort By"
-        app:showAsAction="never"></item>
-
 <!--    <item-->
 <!--        android:id="@+id/someID5"-->
 <!--        android:title="Beak"-->
