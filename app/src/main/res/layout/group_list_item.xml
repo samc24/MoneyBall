@@ -21,7 +21,6 @@
             android:id="@+id/groupPic"
             android:layout_width="match_parent"
             android:layout_height="160dp"
-            android:src="@drawable/ic_launcher_foreground"
             android:adjustViewBounds="true"
             android:scaleType="centerCrop"
             android:layout_weight="2"/>
