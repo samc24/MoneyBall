@@ -36,13 +36,12 @@ import java.io.InputStream;
 import java.util.HashMap;
 
 public class CreateGroupActivity extends AppCompatActivity {
-    private final int PICK_IMAGE = 1;
+    private final int PICK_IMAGE = 1;   //initialize some codes for sending intent
     private final int NEW_GROUP = 123;
     private final int ADD_GROUP = 321, REQUEST_READ_STORAGE = 101;
     Drawable bg;
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference ref = database.getReference();
-    private FirebaseAuth mAuth;
     private ImageButton uploadGP;
     private RelativeLayout groupPicHolder;
     private Uri selectedImageUri;
@@ -51,6 +50,7 @@ public class CreateGroupActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //initialize UI
         setContentView(R.layout.activity_create_group);
         final EditText heading = findViewById(R.id.groupHeading);
         final EditText description = findViewById(R.id.groupDescription);
@@ -58,10 +58,10 @@ public class CreateGroupActivity extends AppCompatActivity {
         Button btn_join_group = findViewById(R.id.btnJoin_group);
         Button exit = findViewById(R.id.exit);
         Button done = findViewById(R.id.done);
-
         groupPicHolder = findViewById(R.id.groupPicHolder);
         final TextView uploadTV = findViewById(R.id.uploadTV);
         uploadGP = findViewById(R.id.uploadGroupPic);
+
         uploadGP.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -107,29 +107,31 @@ public class CreateGroupActivity extends AppCompatActivity {
             }
         });
 
-        final Intent intent = new Intent();
+        final Intent intent = new Intent(); //create an intent
+        //set on click listener for "done" button
         done.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String headingText = heading.getText().toString();
-                String descriptionText = description.getText().toString();
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                String headingText = heading.getText().toString(); //get the heading the user has entered
+                String descriptionText = description.getText().toString(); //get the description the user has entered
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser(); //get the user ID
                 String UID = "";
                 String picUriStr = "";
                 if(user!=null){
                     UID = user.getUid();
                 }
 
-                if(headingText.equals("")|| descriptionText.equals("")){
+                if(headingText.equals("")|| descriptionText.equals("")){ //make sure the necessary info is entered
                     Toast.makeText(getApplicationContext(),  "Please enter group information for all text fields", Toast.LENGTH_SHORT).show();
                 }
-                else {
+                else { //if the info is all there
                     if (selectedImageUri == null || selectedImageUri.toString().equals("")) {
-                        picUriStr = ""; //Toast.makeText(getApplicationContext(),  "add pic", Toast.LENGTH_SHORT).show();
+                        picUriStr = ""; //if no picture is uploaded, set the string to ""
                     } else {
-                        picUriStr = selectedImageUri.toString();
+                        picUriStr = selectedImageUri.toString(); //if a picture has been uploaded, get the path
                     }
                     Toast.makeText(getApplicationContext(), "Done!", Toast.LENGTH_SHORT).show();
+                    //pass the data through the intent
                     intent.putExtra("groupCreator", UID);
                     intent.putExtra("headingText", headingText);
                     intent.putExtra("descriptionText", descriptionText);
@@ -145,38 +147,32 @@ public class CreateGroupActivity extends AppCompatActivity {
         btn_join_group.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final String group = join_group.getText().toString();
-                ref = ref.child("groups");
+                final String group = join_group.getText().toString(); //get the group ID the user has entered
+                ref = ref.child("groups"); //get the database reference
                 ref.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        Boolean validGroupName = false;
                         HashMap<String, Object> dataMap = (HashMap<String, Object>) dataSnapshot.getValue();
                         if(dataMap!=null) {
-
                             for (String key : dataMap.keySet()) {
+                                //loop through the groups
                                 Object data = dataMap.get(key);
                                 HashMap<String, Object> groupData = (HashMap<String, Object>) data;
+                                //get the group data
                                 String heading = groupData.get("heading").toString();
                                 String description = groupData.get("description").toString();
                                 String groupCreator = groupData.get("groupCreator").toString();
                                 String groupId = groupData.get("id").toString();
-                                Log.d("joingroup", heading);
-                                Log.d("joingroup", group);
-                                if(groupId.equals(group)){
-                                    Log.d("joingroup", "EQUALS!");
+                                if(groupId.equals(group)){ //if the ID matches a group
+                                    //pass data through intent for the matched group
                                     intent.putExtra("groupCreator", groupCreator);
                                     intent.putExtra("headingText", heading);
                                     intent.putExtra("descriptionText", description);
                                     intent.putExtra("id", groupId);
                                     setResult(ADD_GROUP, intent);
-                                    finish();
+                                    finish(); //return to users groups page
                                 }
-
-                                //Long picture = (Long)wagerData.get("picture");
-
                             }
-                            //Toast.makeText(getApplicationContext(),  "Not a valid group", Toast.LENGTH_SHORT).show();
                         }
                     }
 

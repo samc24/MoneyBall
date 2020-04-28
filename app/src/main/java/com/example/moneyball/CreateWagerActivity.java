@@ -28,26 +28,26 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 public class CreateWagerActivity extends AppCompatActivity {
-    private final int PICK_IMAGE = 1, REQUEST_READ_STORAGE = 100;
+    private final int PICK_IMAGE = 1, REQUEST_READ_STORAGE = 100; //initialize some codes for sending intent
     ImageButton upload;
     Drawable bg;
     Uri selectedImageUri;
-    final FirebaseDatabase database = FirebaseDatabase.getInstance();
     String uriStr, valBet;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_wager);
+        //initialize UI
         upload = findViewById(R.id.uploadGroupPic);
         final TextView uploadTV = findViewById(R.id.uploadTV);
         final EditText heading = findViewById(R.id.heading);
         final EditText description = findViewById(R.id.description);
-//        final EditText groupName = findViewById(R.id.groupName);
         final EditText betValText = findViewById(R.id.betVal);
         final EditText potentialChallengeText = findViewById(R.id.potentialChallenge);
         Button exit = findViewById(R.id.exit);
         Button btnYes = findViewById(R.id.btnYesCreate);
         Button btnNo = findViewById(R.id.btnNoCreate);
+        //get data from intent
         Intent groupInfo = getIntent();
         final String groupId = groupInfo.getStringExtra("groupId");
 
@@ -64,11 +64,9 @@ public class CreateWagerActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                valBet = betValText.getText().toString();
-                Log.d("BET", "afterTextChanged, before .00: " +valBet);
-                if(!valBet.contains("."))
-                    valBet=valBet+".00";
-                Log.d("BET", "afterTextChanged, before .00: " +valBet);
+                valBet = betValText.getText().toString(); //get the bet value that the user has entered
+                if(!valBet.contains(".")) //if they didnt include the cents
+                    valBet=valBet+".00";  //add cents
             }
         });
 
@@ -116,33 +114,33 @@ public class CreateWagerActivity extends AppCompatActivity {
             }
         });
 
-        final Intent intent = new Intent();
+        final Intent intent = new Intent(); //create an intent
         btnYes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String headingText = heading.getText().toString();
-                String descriptionText = description.getText().toString();
+                String headingText = heading.getText().toString(); //get the wager heading the user entered
+                String descriptionText = description.getText().toString(); //get the wager description the user entered
                 String groupIdToPass = groupId;
-                String voteVal = "Y";
-                double betVal = Double.parseDouble(valBet);
-                Log.d("BET", "done onClick: "+betVal);
-                String potentialChallenge = potentialChallengeText.getText().toString();
-                Log.d("tag", groupIdToPass);
-                if(headingText.equals("")|| descriptionText.equals("")){
+                String voteVal = "Y"; //Since the user is voting yes
+                double betVal = Double.parseDouble(valBet); //parse the value the user entered for the bet
+                String potentialChallenge = potentialChallengeText.getText().toString(); //get the potential challenge the user has entered
+
+                if(headingText.equals("")|| descriptionText.equals("")){ //check the user has entered necessary info
                     Toast.makeText(getApplicationContext(),  "Please enter wager information for all text fields", Toast.LENGTH_SHORT).show();
                 }
 
-                else if (potentialChallenge.equals(""))
+                else if (potentialChallenge.equals("")) //check the user has entered necessary info
                     Toast.makeText(getApplicationContext(),  "Please enter one potential challenge", Toast.LENGTH_SHORT).show();
 
                 else {
-                    if(selectedImageUri==null || selectedImageUri.toString().equals("")){
-                        uriStr = ""; //Toast.makeText(getApplicationContext(),  "add pic", Toast.LENGTH_SHORT).show();
+                    if(selectedImageUri==null || selectedImageUri.toString().equals("")){ //check the user has entered necessary info
+                        uriStr = ""; //make the image string "" if no image is uploaded
                     }
                     else {
-                        uriStr = selectedImageUri.toString();
+                        uriStr = selectedImageUri.toString(); //get the correct image path string if one is uploaded
                     }
                     Toast.makeText(getApplicationContext(),  "Done!", Toast.LENGTH_SHORT).show();
+                    //pass wager data through intent
                     intent.putExtra("pic", uriStr);
                     intent.putExtra("headingText", headingText);
                     intent.putExtra("descriptionText", descriptionText);
@@ -159,29 +157,29 @@ public class CreateWagerActivity extends AppCompatActivity {
         btnNo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String headingText = heading.getText().toString();
-                String descriptionText = description.getText().toString();
+                String headingText = heading.getText().toString(); //get the wager heading the user entered
+                String descriptionText = description.getText().toString(); //get the wager description the user entered
                 String groupIdToPass = groupId;
-                String voteVal = "N";
-                double betVal = Double.parseDouble(valBet);
-                Log.d("BET", "done onClick: "+betVal);
-                String potentialChallenge = potentialChallengeText.getText().toString();
-                Log.d("tag", groupIdToPass);
-                if(headingText.equals("")|| descriptionText.equals("")){
+                String voteVal = "N"; //Since the user is voting no
+                double betVal = Double.parseDouble(valBet); //parse the value the user entered for the bet
+                String potentialChallenge = potentialChallengeText.getText().toString(); //get the potential challenge the user has entered
+
+                if(headingText.equals("")|| descriptionText.equals("")){ //check the user has entered necessary info
                     Toast.makeText(getApplicationContext(),  "Please enter wager information for all text fields", Toast.LENGTH_SHORT).show();
                 }
 
-                else if (potentialChallenge.equals(""))
+                else if (potentialChallenge.equals("")) //check the user has entered necessary info
                     Toast.makeText(getApplicationContext(),  "Please enter one potential challenge", Toast.LENGTH_SHORT).show();
 
                 else {
-                    if(selectedImageUri==null || selectedImageUri.toString().equals("")){
-                        uriStr = ""; //Toast.makeText(getApplicationContext(),  "add pic", Toast.LENGTH_SHORT).show();
+                    if(selectedImageUri==null || selectedImageUri.toString().equals("")){ //check the user has entered necessary info
+                        uriStr = ""; //make the image string "" if no image is uploaded
                     }
                     else {
-                        uriStr = selectedImageUri.toString();
+                        uriStr = selectedImageUri.toString(); //get the correct image path string if one is uploaded
                     }
                     Toast.makeText(getApplicationContext(),  "Done!", Toast.LENGTH_SHORT).show();
+                    //pass wager data through intent
                     intent.putExtra("pic", uriStr);
                     intent.putExtra("headingText", headingText);
                     intent.putExtra("descriptionText", descriptionText);
@@ -195,6 +193,7 @@ public class CreateWagerActivity extends AppCompatActivity {
             }
         });
 
+        //if the user decides not to make a wager
         exit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
