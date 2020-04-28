@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -43,20 +44,27 @@ public class UploadActivity extends AppCompatActivity implements View.OnClickLis
 
     public void onClick(View view) {
         if (view == captureVideoButton) {
-            if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED) {
-                // Permission is not granted
-                if (ActivityCompat.shouldShowRequestPermissionRationale(UploadActivity.this, Manifest.permission.CAMERA)) {
-                    Toast.makeText(getApplicationContext(),  "We need permission to record videos for your challenge!", Toast.LENGTH_LONG).show();
+
+            if (Build.VERSION.SDK_INT >= 23) {
+                if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                    // Permission is not granted
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(UploadActivity.this, Manifest.permission.CAMERA)) {
+                        Toast.makeText(getApplicationContext(), "We need permission to record videos for your challenge!", Toast.LENGTH_LONG).show();
+                    } else {
+                        // No explanation needed; request the permission
+                        ActivityCompat.requestPermissions(UploadActivity.this, new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA);
+                    }
                 } else {
-                    // No explanation needed; request the permission
-                    ActivityCompat.requestPermissions(UploadActivity.this, new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA);
+                    Intent captureVideoIntent = new Intent(android.provider.MediaStore.ACTION_VIDEO_CAPTURE);
+                    startActivityForResult(captureVideoIntent, VIDEO_CAPTURED);
                 }
             }
             else {
                 Intent captureVideoIntent = new Intent(android.provider.MediaStore.ACTION_VIDEO_CAPTURE);
                 startActivityForResult(captureVideoIntent, VIDEO_CAPTURED);
             }
-        } else if (view == playVideoButton) {
+        }
+        else if (view == playVideoButton) {
             videoView.setVideoURI(videoFileUri);
             videoView.start();
         }

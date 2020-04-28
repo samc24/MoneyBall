@@ -233,6 +233,9 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
                 DatabaseReference userGroupsRef = ref.child("users").child(UID).child("groups").push(); //get the correct path to write the data
                 userGroupsRef.setValue(id); //write the data
             }
+            if (resultCode == RESULT_CANCELED){
+                Toast.makeText(getApplicationContext(),  "New Group Canceled", Toast.LENGTH_SHORT).show();
+            }
 
         }
     }
