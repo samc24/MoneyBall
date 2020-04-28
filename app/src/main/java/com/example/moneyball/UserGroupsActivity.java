@@ -147,7 +147,6 @@ public class UserGroupsActivity extends AppCompatActivity implements GroupAdapte
         //respond to menu item selection
         switch (item.getItemId()) {
             case R.id.profile:
-                Toast.makeText(getApplicationContext(), "opening profile page!", Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(this, ProfilePreferencesPage.class));
                 return true;
             case R.id.stats:
