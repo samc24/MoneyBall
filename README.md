@@ -10,8 +10,10 @@ For more information, check out our presentation slides: https://docs.google.com
 ## Setup <br>
 Attached in the folder is the Challenge Upload Youtube APK along with the MoneyBall app, in addition a SHA-1 certificate may be needed in order for authorization to be accepted using the Youtube and Google+ API in order for you to upload challenges to Youtube. Other than that, the app works out of the box. <br>
 When running you will be able to create & join groups, invite friends, chat, check recent NBA stats, propose wagers, and begin competing with your friends on MoneyBall, the social network for bets and challenges! <br>
+### Example flow: <br>
+Login to app -> Edit profile on preferences page, on action bar -> Create new group by clicking on Floating Action Button -> Invite friends to that group using invite button -> create a wager in that group, set the bet value, and propose a challenge -> friends join the group, and join the wager by proposing a challenge -> Trash talk each other on the group chat -> use the action bar to go to the NBA statistics page to view some results -> close the wager and enter correct answer -> losers of wager have to pay the bet using venmo or google pay -> losers could also spin the challenge wheel and upload a video of themselves doing the challenge on youtube, which winners will laugh at -> repeat! <br>
 
 ## Extra Credit <br>
-Fragments Used in Youtube API to list uploaded videos in gridview and connect with GoogleApiClient to receive callbacks and update fragment with challenges. <br>
-Menu used with icons <br>
+- Fragments Used in Youtube API to list uploaded videos in gridview and connect with GoogleApiClient to receive callbacks and update fragment with challenges. <br>
+- Menu used with icons <br>
 
