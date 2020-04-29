@@ -16,7 +16,7 @@ Fragments Used in Youtube API to list uploaded videos in gridview and connect wi
 Menu used with icons <br>
 
 ## Changes <br>
-Originally, we planned to integrate a payment API that would allow the users to make peer to peer payments within the app. However, we ran into many complications when trying to finalize the integration. As a result, we decided to integrate the group chat feature and the NBA stats API to replace the payment API. Also, we still wanted to keep the payment feature so we linked Venmo and Google Pay on the payment page. The links direct you to these apps when click, however you need to have either Venmo or Google Pay downloaded into your device before use. <br>
+Originally, we planned to integrate a payment API that would allow the users to make peer to peer payments within the app. However, we ran into many complications when trying to finalize the integration. As a result, we decided to integrate the group chat feature and the NBA stats API to replace the payment API. Also, we still wanted to keep the payment feature so we linked Venmo and Google Pay on the payment page. The links direct you to these apps when clicked, however you need to have either Venmo or Google Pay downloaded into your device before use. <br>
 
 
 
