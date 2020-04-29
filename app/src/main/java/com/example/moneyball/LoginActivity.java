@@ -46,11 +46,11 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 loginUserAccount();
             }
-        });
+        });//login button
 
         registerBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v) {//register button
                 Intent intent = new Intent(LoginActivity.this, RegistrationActivity.class);
                 startActivity(intent);
             }
@@ -63,7 +63,7 @@ public class LoginActivity extends AppCompatActivity {
         initializeUI();
     }
 
-    private void loginUserAccount() {
+    private void loginUserAccount() {//loging into the user account method for firebase authentication
         progressBar.setVisibility(View.VISIBLE);
 
         final String email, password;
@@ -82,7 +82,7 @@ public class LoginActivity extends AppCompatActivity {
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
+                    public void onComplete(@NonNull Task<AuthResult> task) {//when completed sign in with email and password
                         if (task.isSuccessful()) {
                             Toast.makeText(getApplicationContext(), "Login successful!", Toast.LENGTH_LONG).show();
                             progressBar.setVisibility(View.GONE);
@@ -99,7 +99,7 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
 
-    private void initializeUI() {
+    private void initializeUI() {//setting references
         emailTV = findViewById(R.id.email);
         emailTV.setText("");
         passwordTV = findViewById(R.id.password);

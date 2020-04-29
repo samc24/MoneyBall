@@ -48,7 +48,7 @@ public class RegistrationActivity extends AppCompatActivity {
         });
     }
 
-    private void registerNewUser() {
+    private void registerNewUser() {//registering a new user with firebase authentication
         progressBar.setVisibility(View.VISIBLE);
 
         final String email, password, username;
@@ -69,11 +69,11 @@ public class RegistrationActivity extends AppCompatActivity {
             return;
         }
 
-        mAuth.createUserWithEmailAndPassword(email, password)
+        mAuth.createUserWithEmailAndPassword(email, password)//registering with the emial and password given
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
+                    public void onComplete(@NonNull Task<AuthResult> task) {//created listeners for when the code is completed
+                        if (task.isSuccessful()) {//if successful registration...
                             Toast.makeText(getApplicationContext(), "Registration successful!", Toast.LENGTH_LONG).show();
                             progressBar.setVisibility(View.GONE);
                             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -100,7 +100,7 @@ public class RegistrationActivity extends AppCompatActivity {
     }
 
     @SuppressLint("CutPasteId")
-    private void initializeUI() {
+    private void initializeUI() {//creating references to views
         emailTV = findViewById(R.id.email);
         passwordTV = findViewById(R.id.password);
         usernameTV = findViewById(R.id.etUsername);
