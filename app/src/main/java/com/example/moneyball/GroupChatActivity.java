@@ -46,16 +46,15 @@ public class GroupChatActivity extends AppCompatActivity {
     private MessageAdapter messageAdapter;
 
 
-    private FirebaseAuth myAuth;
-    private DatabaseReference UsersRef, GroupMessageKeyRef,currentGroupRef, RootRef;
+    private FirebaseAuth myAuthorization;
+    private DatabaseReference UsersRef, GroupMessageKeyRef,currentGroupRef;
 
 
 
-    FirebaseStorage storage = FirebaseStorage.getInstance();
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference ref = database.getReference();
 
-    private String currentGroupID, currentUserID, currentUserName, currentDate, currentTime,ChatID;
+    private String currentGroupID, currentUserID, currentUserName, currentDate, currentTime;
 
 
 
@@ -64,21 +63,21 @@ public class GroupChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_chat);
 
-        InitializeFields();
+        InitializeFields(); //calls function that initializes all view on layout.
 
-        myAuth = FirebaseAuth.getInstance();
-        UsersRef = FirebaseDatabase.getInstance().getReference().child("users");
-        currentUserID = myAuth.getUid(); // current user's ID
-        currentGroupID = getIntent().getExtras().get("groupId").toString();
-        currentGroupRef = ref.child("groups").child(currentGroupID).child("chatId");
-        RootRef = FirebaseDatabase.getInstance().getReference();
+        myAuthorization = FirebaseAuth.getInstance(); // used as reference
+        UsersRef = FirebaseDatabase.getInstance().getReference().child("users"); //used to reference current user in database
+        currentUserID = myAuthorization.getUid(); // collect current user's ID using reference
+        currentGroupID = getIntent().getExtras().get("groupId").toString(); //collects intent from GroupActivity which passes group id.
+        currentGroupRef = ref.child("groups").child(currentGroupID).child("chatId"); // stores reference to current group that user is in
 
 
+        //used to collect current username of current user using reference to database
         UsersRef.child(currentUserID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()){
-                    currentUserName = dataSnapshot.child("profile").child("username").getValue().toString(); //collect user email for display in chat
+                    currentUserName = dataSnapshot.child("profile").child("username").getValue().toString(); //collect username for display in chat
                 }
             }
 
@@ -88,6 +87,8 @@ public class GroupChatActivity extends AppCompatActivity {
             }
         });
 
+
+        //on click for the send button
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -104,8 +105,7 @@ public class GroupChatActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        //collect current message data and displays on screen
-
+        //collects current message data and displays on screen
         currentGroupRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
@@ -141,25 +141,12 @@ public class GroupChatActivity extends AppCompatActivity {
         });
     }
 
-    // private void DisplayMessages(DataSnapshot dataSnapshot) {
-    //  Iterator iterator = dataSnapshot.getChildren().iterator();
-    //  while(iterator.hasNext()){
-    //    String chatDate = (String) ((DataSnapshot)iterator.next()).getValue();
-    //    String chatMessage = (String) ((DataSnapshot)iterator.next()).getValue();
-    //  String chatName = (String) ((DataSnapshot)iterator.next()).getValue();
-    //  String chatTime = (String) ((DataSnapshot)iterator.next()).getValue();
-
-    //  displayTextMessages.append(chatName + " :\n" + chatMessage + "\n" + chatTime + "      " + chatDate + "\n\n\n");
-    //  mScrollView.fullScroll(ScrollView.FOCUS_DOWN);
-    //  }
 
 
-    //  }
-
-    private void InitializeFields(){ //works fine
+    private void InitializeFields(){
         sendButton = (Button) findViewById(R.id.send_button); //button to send message
         userMessageInput = findViewById(R.id.input_message); //user input for message
-        messageAdapter = new MessageAdapter(messagesList);//list of message for adapter
+        messageAdapter = new MessageAdapter(messagesList);//list of messages for adapter
         userMessagesList = (RecyclerView)findViewById(R.id.message_display);//initialized recycler view used for messages
         linearLayoutManager = new LinearLayoutManager(this);
         userMessagesList.setLayoutManager(linearLayoutManager);
@@ -168,12 +155,12 @@ public class GroupChatActivity extends AppCompatActivity {
     }
 
 
+    ///stores message info in database
+    private void SendMessage(){
 
-    private void SendMessage(){ ///theoretically still puts message data in db
-
-        String messageText = userMessageInput.getText().toString();
-        String messageKey = currentGroupRef.push().getKey();
-        userMessageInput.setText("");
+        String messageText = userMessageInput.getText().toString(); //converts message to text
+        String messageKey = currentGroupRef.push().getKey(); //pushes new message into database and stores its unique key
+        userMessageInput.setText(""); //clears EditText view on UI after user send message
 
         if (TextUtils.isEmpty(messageText)){
             Toast.makeText(this,"Write your message", Toast.LENGTH_LONG);
@@ -181,10 +168,12 @@ public class GroupChatActivity extends AppCompatActivity {
         }
         ///sets message in db
         else{
+            //collects Date information
             Calendar callforDate = Calendar.getInstance();
             SimpleDateFormat currentDateFormat = new SimpleDateFormat("MMM dd, yyyy");
             currentDate = currentDateFormat.format(callforDate.getTime());
 
+            //collects Time information
             Calendar callforTime = Calendar.getInstance();
             SimpleDateFormat currentTimeFormat = new SimpleDateFormat("hh:mm a");
             currentTime = currentTimeFormat.format(callforTime.getTime());
@@ -192,14 +181,14 @@ public class GroupChatActivity extends AppCompatActivity {
             HashMap<String, Object> groupMessageKey = new HashMap<>();
             currentGroupRef.updateChildren(groupMessageKey);
 
-            GroupMessageKeyRef = currentGroupRef.child(messageKey);
-            HashMap<String, Object> messageInfoMap = new HashMap<>();
+            GroupMessageKeyRef = currentGroupRef.child(messageKey); // references unique message key in database
+            HashMap<String, Object> messageInfoMap = new HashMap<>(); //put all message values in hash
             messageInfoMap.put("name", currentUserName);
             messageInfoMap.put("message", messageText);
             messageInfoMap.put("date", currentDate);
             messageInfoMap.put("time", currentTime);
 
-            GroupMessageKeyRef.updateChildren(messageInfoMap);
+            GroupMessageKeyRef.updateChildren(messageInfoMap); // insert values in database.
 
         }
     }

@@ -22,69 +22,54 @@ import java.util.List;
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder>
 {
     private List<Messages> userMessagesList;
-    private FirebaseAuth mAuth;
-    private DatabaseReference userRef;
 
+    //constructor
     public MessageAdapter(List<Messages> userMessagesList){
         this.userMessagesList = userMessagesList;
     }
 
+
+
     public class MessageViewHolder extends RecyclerView.ViewHolder{
 
-        public TextView messageText;
+        public TextView messageText; //used to hold message TextViews (message_layout.xml)
 
         public MessageViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            messageText = (TextView) itemView.findViewById(R.id.textMessage); // intialized the message layout (message bubble)
+            messageText = (TextView) itemView.findViewById(R.id.textMessage); // intialized the message_layout.xml (message bubble)
 
         }
     }
 
-
+    //creates new views(invoked by layout manager)
     @NonNull
     @Override
     public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext())
                 .inflate(R.layout.message_layout,viewGroup,false);
-        mAuth = FirebaseAuth.getInstance();
         return new MessageViewHolder(view);
     }
 
 
-
+    //puts content on Edit text (message bubble)
     @Override
     public void onBindViewHolder(@NonNull MessageViewHolder messageViewHolder, int i) {
-        String messageSenderId = mAuth.getCurrentUser().getUid();
+        //String messageSenderId = myAuthorization.getCurrentUser().getUid();
         Messages messages = userMessagesList.get(i);
 
-        String fromUserID= messages.getName();
 
-        userRef = FirebaseDatabase.getInstance().getReference().child("users").child(fromUserID);
-        userRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-        messageViewHolder.messageText.setBackgroundResource(R.drawable.bubble);
+        //set message information on message layout (message_layout.xml)
+        messageViewHolder.messageText.setBackgroundResource(R.drawable.bubble); //creates chat bubble
         messageViewHolder.messageText.setTextColor(Color.BLACK);
         messageViewHolder.messageText.setText(messages.getName() + ":              " + messages.getTime() +" | " + messages.getDate() + "\n\n"  + messages.getMessage()); ///write message to bubble
 
-
-
     }
 
-
-
-    @Override
+    // Return the size of your dataset (invoked by the layout manager)
+   @Override
     public int getItemCount() {
-        return userMessagesList.size();
+       return userMessagesList.size();
     }
 
 
