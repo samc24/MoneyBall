@@ -2,6 +2,12 @@
 CS 591 E2 Final Project: Social Network for Bets and Challenges. Team: AliasX
 
 
+<p align="center">
+  <img src="https://github.com/samc24/MoneyBall/blob/master/app/src/main/res/mipmap-xxxhdpi/big_logo.png?raw=true" width="150" title="hover text">
+  <img src="https://github.com/samc24/MoneyBall/blob/master/app/src/main/res/drawable/moneyball_logo.jpg?raw=true" width="200" title="hover text">
+</p>
+
+
 Our app, MoneyBall, is the new social network for bets and challenges! MoneyBall allows users to create and join groups for lighthearted wagers regarding anything at all - from sports, to traffic, to whether your friend James will puke after eating 15 hotdogs. Trash talk with your friends using our built-in chat feature, and propose wagers within your group. View live statistics for NBA games to see what you could wager on, and what the results were. Wager losers have the option to pay their friends using a payment service, or pay up by completing a challenge and uploading a recording using our YouTube API integration. <br>
 Want to watch your best friend slap himself? Join MoneyBall today - where money isn’t always the biggest prize. <br>
 
@@ -16,4 +22,5 @@ Login to app -> Edit profile on preferences page, on action bar -> Create new gr
 ## Extra Credit <br>
 - Fragments Used in Youtube API to list uploaded videos in gridview and connect with GoogleApiClient to receive callbacks and update fragment with challenges. <br>
 - Menu used with icons <br>
+
 
